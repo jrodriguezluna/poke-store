@@ -1,0 +1,20 @@
+.nav-hover {
+  display: inline-flex;
+  flex-direction: column;
+  align-items: flex-start;
+}
+ 
+.nav-hover::after {
+  content: attr(data-text);
+  font-weight: 700;
+  height: 0;
+  visibility: hidden;
+  overflow: hidden;
+  pointer-events: none;
+  user-select: none;
+}
+ 
+.nav-hover:hover,
+.nav-hover.active {
+  font-weight: 700;
+}
