@@ -6,14 +6,14 @@ import './Navbar.css';
 
 const enlaces = [
   { to: '/', label: 'Inicio', end: true },
-  { to: '/Catalogo', label: 'Catálogo' },
-  { to: '/Producto/1', label: 'Detalle' },
-  { to: '/Carrito', label: 'Carrito' },
-  { to: '/Checkout', label: 'Checkout' },
-  { to: '/Login', label: 'Login' },
-  { to: '/Contacto', label: 'Contacto' },
-  { to: '/Perfil', label: 'Perfil' },
-  { to: '/Nosotros', label: 'Nosotros' },
+  { to: '/catalogo', label: 'Catálogo' },
+  { to: '/producto/1', label: 'Detalle' },
+  { to: '/carrito', label: 'Carrito' },
+  { to: '/checkout', label: 'Checkout' },
+  { to: '/login', label: 'Login' },
+  { to: '/contacto', label: 'Contacto' },
+  { to: '/perfil', label: 'Perfil' },
+  { to: '/nosotros', label: 'Nosotros' },
 ];
 
 function AppNavbar() {

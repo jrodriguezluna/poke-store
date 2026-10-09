@@ -37,8 +37,12 @@ module.exports = function (config) {
         base: 'ChromeHeadless',
         flags: ['--no-sandbox'],
       },
+      FirefoxHeadlessCustom: {
+        base: 'FirefoxHeadless',
+        flags: ['-headless'],
+      },
     },
-    browsers: ['ChromeHeadlessNoSandbox'],
+    browsers: ['FirefoxHeadlessCustom'],
     singleRun: false,
   });
 };
