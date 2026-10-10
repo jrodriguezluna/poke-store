@@ -2,6 +2,7 @@ import { NavLink } from 'react-router-dom';
 import Container from 'react-bootstrap/Container';
 import Nav from 'react-bootstrap/Nav';
 import Navbar from 'react-bootstrap/Navbar';
+import { useAuth } from '../context/AuthContext';
 import './Navbar.css';
 
 const enlacesIzquierda = [
@@ -9,11 +10,6 @@ const enlacesIzquierda = [
   { to: '/catalogo', label: 'Catálogo' },
   { to: '/nosotros', label: 'Nosotros' },
   { to: '/perfil', label: 'Perfil' },
-];
-
-const enlacesDerecha = [
-  { to: '/carrito', label: 'Carrito' },
-  { to: '/login', label: 'Login' },
 ];
 
 function renderEnlaces(enlaces) {
@@ -32,6 +28,8 @@ function renderEnlaces(enlaces) {
 }
 
 function AppNavbar() {
+  const { user, logout } = useAuth();
+
   return (
     <Navbar expand="lg" bg="dark" data-bs-theme="dark" sticky="top">
       <Container>
@@ -43,7 +41,16 @@ function AppNavbar() {
 
         <Navbar.Collapse id="menuPrincipal">
           <Nav className="me-auto">{renderEnlaces(enlacesIzquierda)}</Nav>
-          <Nav className="ms-lg-auto">{renderEnlaces(enlacesDerecha)}</Nav>
+          <Nav className="ms-lg-auto">
+            {renderEnlaces([{ to: '/carrito', label: 'Carrito' }])}
+            {user ? (
+              <Nav.Link as="button" type="button" onClick={logout}>
+                Salir
+              </Nav.Link>
+            ) : (
+              renderEnlaces([{ to: '/login', label: 'Login' }])
+            )}
+          </Nav>
         </Navbar.Collapse>
       </Container>
     </Navbar>
