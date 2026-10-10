@@ -1,3 +1,13 @@
+.navbar-nav {
+  gap: 0.25rem;
+}
+
+@media (min-width: 992px) {
+  .navbar-nav {
+    gap: 1rem;
+  }
+}
+
 .nav-hover {
   display: inline-flex;
   flex-direction: column;

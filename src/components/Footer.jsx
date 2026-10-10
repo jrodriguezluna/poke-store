@@ -4,7 +4,7 @@ function Footer() {
   return (
     <footer className="bg-dark text-light mt-auto py-4">
       <div className="container">
-        <div className="row gy-3">
+        <div className="row gy-4 gx-md-5">
           <div className="col-12 col-md-4">
             <h2 className="h5">
               <span className="text-danger">Poke</span>Store
@@ -16,7 +16,7 @@ function Footer() {
 
           <nav className="col-6 col-md-4" aria-label="Tienda">
             <h2 className="h6">Tienda</h2>
-            <ul className="list-unstyled small mb-0">
+            <ul className="list-unstyled small mb-0 d-flex flex-column gap-2">
               <li><Link className="link-light" to="/catalogo">Catálogo</Link></li>
               <li><Link className="link-light" to="/carrito">Carrito</Link></li>
               <li><Link className="link-light" to="/nosotros">Nosotros</Link></li>

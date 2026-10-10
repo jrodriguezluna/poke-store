@@ -4,17 +4,32 @@ import Nav from 'react-bootstrap/Nav';
 import Navbar from 'react-bootstrap/Navbar';
 import './Navbar.css';
 
-const enlaces = [
+const enlacesIzquierda = [
   { to: '/', label: 'Inicio', end: true },
-  { to: '/Catalogo', label: 'Catálogo' },
-  { to: '/Producto/1', label: 'Detalle' },
-  { to: '/Carrito', label: 'Carrito' },
-  { to: '/Checkout', label: 'Checkout' },
-  { to: '/Login', label: 'Login' },
-  { to: '/Contacto', label: 'Contacto' },
-  { to: '/Perfil', label: 'Perfil' },
-  { to: '/Nosotros', label: 'Nosotros' },
+  { to: '/catalogo', label: 'Catálogo' },
+  { to: '/nosotros', label: 'Nosotros' },
+  { to: '/perfil', label: 'Perfil' },
 ];
+
+const enlacesDerecha = [
+  { to: '/carrito', label: 'Carrito' },
+  { to: '/login', label: 'Login' },
+];
+
+function renderEnlaces(enlaces) {
+  return enlaces.map(({ to, label, end }) => (
+    <Nav.Link
+      key={to}
+      as={NavLink}
+      to={to}
+      end={end}
+      className="nav-hover"
+      data-text={label}
+    >
+      {label}
+    </Nav.Link>
+  ));
+}
 
 function AppNavbar() {
   return (
@@ -27,20 +42,8 @@ function AppNavbar() {
         <Navbar.Toggle aria-controls="menuPrincipal" />
 
         <Navbar.Collapse id="menuPrincipal">
-          <Nav className="me-auto">
-            {enlaces.map(({ to, label, end }) => (
-              <Nav.Link
-                key={to}
-                as={NavLink}
-                to={to}
-                end={end}
-                className="nav-hover"
-                data-text={label}
-              >
-                {label}
-              </Nav.Link>
-            ))}
-          </Nav>
+          <Nav className="me-auto">{renderEnlaces(enlacesIzquierda)}</Nav>
+          <Nav className="ms-lg-auto">{renderEnlaces(enlacesDerecha)}</Nav>
         </Navbar.Collapse>
       </Container>
     </Navbar>

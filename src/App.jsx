@@ -17,7 +17,7 @@ function App() {
     <BrowserRouter>
       <div className="d-flex flex-column min-vh-100">
         <Navbar />
-        <main className="flex-grow-1">
+        <main className="flex-grow-1 py-4 py-md-5">
           <Routes>
             <Route path="/" element={<Home />} />
             <Route path="/catalogo" element={<Catalogo />} />
