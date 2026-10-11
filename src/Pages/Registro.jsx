@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import { useAuth } from '../context/AuthContext';
 import { regiones } from '../utils/regiones';
+import { registrarUsuario } from '../services/api';
 
 const inicial = {
   nombre: '',
@@ -16,17 +16,16 @@ const inicial = {
 
 function Registro() {
   const navigate = useNavigate();
-  const { register } = useAuth();
   const [datos, setDatos] = useState(inicial);
   const [errores, setErrores] = useState({});
   const [errorGeneral, setErrorGeneral] = useState('');
+  const [enviando, setEnviando] = useState(false);
 
   const comunas = regiones.find((r) => r.nombre === datos.region)?.comunas ?? [];
 
   const manejarCambio = (e) => {
     const { id, value } = e.target;
     if (id === 'region') {
-    
       setDatos({ ...datos, region: value, comuna: '' });
     } else {
       setDatos({ ...datos, [id]: value });
@@ -41,7 +40,6 @@ function Registro() {
     if (!/^\S+@\S+\.\S+$/.test(datos.email)) {
       nuevos.email = 'Email inválido';
     }
-    
     if (datos.telefono.trim() !== '' && !/^(\+?56)?\s?9\s?\d{4}\s?\d{4}$/.test(datos.telefono.trim())) {
       nuevos.telefono = 'Ingresa un celular válido, ej: +56 9 1234 5678';
     }
@@ -63,20 +61,29 @@ function Registro() {
     return nuevos;
   };
 
-  const manejarEnvio = (e) => {
+  const manejarEnvio = async (e) => {
     e.preventDefault();
     const nuevos = validar();
     setErrores(nuevos);
     setErrorGeneral('');
 
-    if (Object.keys(nuevos).length === 0) {
-      const resultado = register(datos);
-      if (!resultado.ok) {
-        setErrorGeneral(resultado.error);
-        return;
-      }
+    if (Object.keys(nuevos).length > 0) return;
+
+    // "confirmar" solo sirve para validar en el front, no se envía
+    const { confirmar, ...usuario } = datos;
+
+    setEnviando(true);
+    try {
+      await registrarUsuario({
+        ...usuario,
+        telefono: usuario.telefono.trim() || null,
+      });
       console.log('[LOG][Registro] Usuario guardado:', datos.email);
       navigate('/login');
+    } catch (err) {
+      setErrorGeneral(err.message);
+    } finally {
+      setEnviando(false);
     }
   };
 
@@ -136,7 +143,9 @@ function Registro() {
 
             {errorGeneral && <div className="alert alert-danger mt-3 mb-0">{errorGeneral}</div>}
 
-            <button type="submit" className="btn btn-danger w-100 mt-4">Crear cuenta</button>
+            <button type="submit" className="btn btn-danger w-100 mt-4" disabled={enviando}>
+              {enviando ? 'Creando cuenta...' : 'Crear cuenta'}
+            </button>
           </form>
 
           <p className="text-center small mt-4 mb-0">
