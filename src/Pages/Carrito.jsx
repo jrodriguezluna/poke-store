@@ -184,14 +184,24 @@ export default function Carrito() {
                 </span>
               </div>
 
-              <button
-                className="btn btn-success w-100 btn-lg fw-bold py-3 shadow-sm"
-                id="btn-pagar"
-                disabled={items.length === 0}
-                onClick={handlePagar}
-              >
-                PAGAR
-              </button>
+              <div className="d-flex flex-column gap-2">
+                <button
+                  className="btn btn-success w-100 btn-lg fw-bold py-3 shadow-sm"
+                  id="btn-pagar"
+                  disabled={items.length === 0}
+                  onClick={handlePagar}
+                >
+                  PAGAR RÁPIDO
+                </button>
+                <Link
+                  to="/checkout"
+                  className={`btn btn-outline-success w-100 fw-bold py-2 ${
+                    items.length === 0 ? 'disabled' : ''
+                  }`}
+                >
+                  Proceder al Checkout →
+                </Link>
+              </div>
             </div>
           </div>
         </div>
