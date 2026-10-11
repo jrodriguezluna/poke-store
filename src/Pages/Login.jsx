@@ -1,14 +1,16 @@
 import { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
+import { login as loginApi } from '../services/api';
 
 function Login() {
   const navigate = useNavigate();
-  const { login } = useAuth();
+  const { guardarSesion } = useAuth();
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [errores, setErrores] = useState({});
   const [errorGeneral, setErrorGeneral] = useState('');
+  const [enviando, setEnviando] = useState(false);
 
   const validar = () => {
     const nuevos = {};
@@ -21,20 +23,24 @@ function Login() {
     return nuevos;
   };
 
-  const manejarEnvio = (e) => {
+  const manejarEnvio = async (e) => {
     e.preventDefault();
     const nuevos = validar();
     setErrores(nuevos);
     setErrorGeneral('');
 
-    if (Object.keys(nuevos).length === 0) {
-      const resultado = login(email, password);
-      if (!resultado.ok) {
-        setErrorGeneral(resultado.error);
-        return;
-      }
+    if (Object.keys(nuevos).length > 0) return;
+
+    setEnviando(true);
+    try {
+      const data = await loginApi({ email, password });
+      guardarSesion(data);
       console.log('[LOG][Login] Sesión iniciada:', email);
       navigate('/');
+    } catch (err) {
+      setErrorGeneral(err.message);
+    } finally {
+      setEnviando(false);
     }
   };
 
@@ -72,7 +78,9 @@ function Login() {
 
             {errorGeneral && <div className="alert alert-danger">{errorGeneral}</div>}
 
-            <button type="submit" className="btn btn-danger w-100">Ingresar</button>
+            <button type="submit" className="btn btn-danger w-100" disabled={enviando}>
+              {enviando ? 'Ingresando...' : 'Ingresar'}
+            </button>
           </form>
 
           <p className="text-center small mt-4 mb-0">

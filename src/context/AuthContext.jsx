@@ -2,15 +2,8 @@ import { createContext, useContext, useState } from 'react';
 
 const AuthContext = createContext(null);
 
-const USUARIOS_KEY = 'poke_usuarios';
 const SESION_KEY = 'poke_sesion';
-
-const ADMIN = {
-  nombre: 'Administrador',
-  email: 'admin@pokestore.cl',
-  password: 'admin123',
-  rol: 'admin',
-};
+const TOKEN_KEY = 'token'; // misma clave que lee services/api.js
 
 const leer = (clave, defecto) => {
   try {
@@ -24,55 +17,29 @@ const leer = (clave, defecto) => {
 export function AuthProvider({ children }) {
   const [user, setUser] = useState(() => leer(SESION_KEY, null));
 
-  const iniciarSesion = (usuario) => {
-    const { password: _omitida, ...sesion } = usuario; 
+  // Recibe la respuesta de POST /api/login.
+  // Acepta { usuario, token }, { user, access_token } o el usuario directo.
+  const guardarSesion = (data) => {
+    const usuario = data.usuario ?? data.user ?? data;
+    const token = data.token ?? data.access_token;
+
+    const { password: _omitida, ...sesion } = usuario;
+
     localStorage.setItem(SESION_KEY, JSON.stringify(sesion));
+    if (token) localStorage.setItem(TOKEN_KEY, token);
     setUser(sesion);
-  };
-
-  const register = (datos) => {
-    const usuarios = leer(USUARIOS_KEY, []);
-    const email = datos.email.trim().toLowerCase();
-
-    if (email === ADMIN.email || usuarios.some((u) => u.email === email)) {
-      return { ok: false, error: 'Ya existe una cuenta con ese email' };
-    }
-
-    const { confirmar, ...resto } = datos; 
-    usuarios.push({ ...resto, email, rol: 'cliente' });
-    localStorage.setItem(USUARIOS_KEY, JSON.stringify(usuarios));
-    return { ok: true };
-  };
-
-  const login = (email, password) => {
-    const correo = email.trim().toLowerCase();
-
-
-    if (correo === ADMIN.email && password === ADMIN.password) {
-      iniciarSesion(ADMIN);
-      return { ok: true };
-    }
-
-    const usuarios = leer(USUARIOS_KEY, []);
-    const encontrado = usuarios.find((u) => u.email === correo && u.password === password);
-
-    if (!encontrado) {
-      return { ok: false, error: 'Email o contraseña incorrectos' };
-    }
-
-    iniciarSesion(encontrado);
-    return { ok: true };
   };
 
   const logout = () => {
     localStorage.removeItem(SESION_KEY);
+    localStorage.removeItem(TOKEN_KEY);
     setUser(null);
   };
 
   const esAdmin = user?.rol === 'admin';
 
   return (
-    <AuthContext.Provider value={{ user, esAdmin, login, logout, register }}>
+    <AuthContext.Provider value={{ user, esAdmin, guardarSesion, logout }}>
       {children}
     </AuthContext.Provider>
   );
