@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
 import { useParams, Link } from 'react-router-dom';
+import { getProducto } from '../services/api';
 import { PRODUCTOS_MOCK } from '../data/productos';
 
 export default function Detalle() {
@@ -7,14 +8,35 @@ export default function Detalle() {
   const [cantidad, setCantidad] = useState(1);
   const [alertaAgregado, setAlertaAgregado] = useState(false);
 
-  // Buscar el producto por ID en nuestro dataset mock
-  const producto = PRODUCTOS_MOCK.find((item) => item.id === Number(id));
+  // Fallback inmediato desde el mock para que la UI no quede en blanco
+  // mientras llega la respuesta de la API (y para que los tests funcionen sin backend)
+  const [producto, setProducto] = useState(
+    () => PRODUCTOS_MOCK.find((item) => item.id === Number(id)) || null
+  );
+  const [cargando, setCargando] = useState(false);
 
-  // Resetear la cantidad y alerta cuando cambie el ID del producto
   useEffect(() => {
     setCantidad(1);
     setAlertaAgregado(false);
+    setCargando(true);
+    getProducto(id)
+      .then((data) => setProducto(data))
+      .catch(() => {
+        // Si la API falla mantenemos el dato mock ya cargado
+        console.warn(`[Detalle] API no disponible para producto ${id}, usando datos locales.`);
+      })
+      .finally(() => setCargando(false));
   }, [id]);
+
+  if (cargando && !producto) {
+    return (
+      <div className="container py-5 text-center">
+        <div className="spinner-border text-danger" role="status">
+          <span className="visually-hidden">Cargando...</span>
+        </div>
+      </div>
+    );
+  }
 
   if (!producto) {
     return (
@@ -50,7 +72,6 @@ export default function Detalle() {
 
   const handleAgregarAlCarrito = () => {
     setAlertaAgregado(true);
-    // Ocultar alerta automáticamente después de 3 segundos
     setTimeout(() => {
       setAlertaAgregado(false);
     }, 3000);
@@ -92,7 +113,7 @@ export default function Detalle() {
           {/* Columna Información de Compra */}
           <div className="col-lg-6 ps-lg-4">
             <span className="badge bg-primary mb-2" id="detalle-categoria">
-              {producto.categoria}
+              {producto.categoria || producto.tipo}
             </span>
             <small className="text-muted ms-2" id="detalle-codigo">
               Código: {producto.codigo || `PROD-${producto.id}`}
