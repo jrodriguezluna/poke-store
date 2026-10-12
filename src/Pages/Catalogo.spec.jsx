@@ -40,4 +40,21 @@ describe('Catalogo Component', () => {
     expect(screen.getByText('Peluche Pikachu 30cm')).toBeTruthy();
     expect(screen.queryByText('Figura Coleccionable Charizard')).toBeNull();
   });
+
+  it('filtra productos por categoría', async () => {
+    render(
+      <MemoryRouter>
+        <Catalogo />
+      </MemoryRouter>
+    );
+
+    await waitFor(() => {
+      expect(screen.getByText('Peluche Pikachu 30cm')).toBeTruthy();
+    });
+
+    fireEvent.click(screen.getByRole('button', { name: 'Peluches' }));
+
+    expect(screen.getByText('Peluche Pikachu 30cm')).toBeTruthy();
+    expect(screen.queryByText('Figura Coleccionable Charizard')).toBeNull();
+  });
 });
