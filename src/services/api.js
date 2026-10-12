@@ -28,6 +28,14 @@ export const registrarUsuario = (datos) =>
 export const login = (datos) =>
   request("/api/login", { method: "POST", body: JSON.stringify(datos) });
 
+export const listarUsuarios = () => request("/api/usuarios");
+
+export const modificarUsuario = (id, datos) =>
+  request(`/api/usuarios/${id}`, { method: "PUT", body: JSON.stringify(datos) });
+
+export const eliminarUsuario = (id) =>
+  request(`/api/usuarios/${id}`, { method: "DELETE" });
+
 // ---------- Productos ----------
 export const getProductos = () => request("/api/productos");
 

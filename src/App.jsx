@@ -11,6 +11,7 @@ import Checkout from './Pages/Checkout';
 import Contacto from './Pages/Contacto';
 import Perfil from './Pages/Perfil';
 import Login from './Pages/Login';
+import AdminUsuarios from "./Pages/AdminUsuarios";
 import { AuthProvider } from './context/AuthContext';
 
 function App() {
@@ -31,6 +32,7 @@ function App() {
             <Route path="/perfil" element={<Perfil />} />
             <Route path="/registro" element={<Registro />} />
             <Route path="/login" element={<Login />} />
+            <Route path="/admin/usuarios" element={<AdminUsuarios />} />
           </Routes>
         </main>
         <Footer />
