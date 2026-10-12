@@ -1,26 +1,45 @@
 import { render, screen, fireEvent } from '@testing-library/react';
 import { MemoryRouter } from 'react-router-dom';
 import Catalogo from './Catalogo';
+import { PRODUCTOS_MOCK } from '../data/productos';
 
 describe('Catalogo Component', () => {
-  it('filtra los productos por nombre al escribir en el campo de búsqueda', () => {
+  it('renderiza producto', () => {
+    console.log('[LOG][Catalogo] Inicio');
     render(
       <MemoryRouter>
         <Catalogo />
       </MemoryRouter>
     );
 
-    // Verificamos que inicialmente aparezca Pikachu y Charizard
+    // detalles
+    const tarjetas = screen.getAllByRole('link', { name: /ver detalle/i });
+    expect(tarjetas.length).toBe(PRODUCTOS_MOCK.length);
+
+    // nombres
+    PRODUCTOS_MOCK.forEach((producto) => {
+      expect(screen.getByText(producto.nombre)).toBeTruthy();
+    });
+
+    console.log('[LOG][Catalogo] OK: ' + tarjetas.length + ' tarjetas renderizadas');
+  });
+
+  it('filtra los productos', () => {
+    render(
+      <MemoryRouter>
+        <Catalogo />
+      </MemoryRouter>
+    );
+
+    // testeo
     expect(screen.getByText('Peluche Pikachu 30cm')).toBeTruthy();
     expect(screen.getByText('Figura Coleccionable Charizard')).toBeTruthy();
 
-    // Escribimos "Pikachu" en el input de búsqueda
+
     const inputBusqueda = screen.getByPlaceholderText('Ej: Pikachu, Peluche...');
     fireEvent.change(inputBusqueda, { target: { value: 'Pikachu' } });
 
-    // Verificamos que se muestre Pikachu y no se muestre Charizard
     expect(screen.getByText('Peluche Pikachu 30cm')).toBeTruthy();
     expect(screen.queryByText('Figura Coleccionable Charizard')).toBeNull();
   });
 });
-
