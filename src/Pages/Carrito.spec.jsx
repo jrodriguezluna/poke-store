@@ -1,9 +1,11 @@
 import { render, screen, fireEvent, waitFor } from '@testing-library/react';
 import { MemoryRouter } from 'react-router-dom';
 import { AuthProvider } from '../context/AuthContext';
+import { PRODUCTOS_MOCK } from '../data/productos';
 import Carrito from './Carrito';
 
 const SESION_KEY = 'poke_sesion';
+const CARRITO_KEY = 'poke_carrito';
 
 // Usuario de prueba que simula una sesión activa
 const usuarioMock = {
@@ -17,6 +19,10 @@ describe('Carrito Component', () => {
   beforeEach(() => {
     // Simulamos que hay un usuario logueado en localStorage
     localStorage.setItem(SESION_KEY, JSON.stringify(usuarioMock));
+    localStorage.setItem(CARRITO_KEY, JSON.stringify([
+      { ...PRODUCTOS_MOCK[0], cantidad: 2 },
+      { ...PRODUCTOS_MOCK[1], cantidad: 1 },
+    ]));
 
     // Mockeamos fetch para que POST /api/pedidos responda con éxito
     spyOn(window, 'fetch').and.returnValue(
@@ -31,6 +37,7 @@ describe('Carrito Component', () => {
 
   afterEach(() => {
     localStorage.removeItem(SESION_KEY);
+    localStorage.removeItem(CARRITO_KEY);
   });
 
   it('permite pagar con la API y muestra el número de orden real', async () => {
@@ -57,5 +64,8 @@ describe('Carrito Component', () => {
 
     // 4. Verificamos que muestre el número de orden que devolvió el backend (4215)
     expect(screen.getByText(/#PK-4215/i)).toBeTruthy();
+    await waitFor(() => {
+      expect(JSON.parse(localStorage.getItem(CARRITO_KEY))).toEqual([]);
+    });
   });
 });

@@ -1,21 +1,21 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import { crearPedido } from '../services/api';
-import { PRODUCTOS_MOCK } from '../data/productos';
+import { guardarCarrito, leerCarrito } from '../utils/carrito';
 
 export default function Carrito() {
   const { user } = useAuth();
 
-  // Inicializamos el carrito con un par de productos del mock para poder probarlo de inmediato
-  const [items, setItems] = useState([
-    { ...PRODUCTOS_MOCK[0], cantidad: 2 }, // Pikachu x2
-    { ...PRODUCTOS_MOCK[1], cantidad: 1 }, // Charizard x1
-  ]);
+  const [items, setItems] = useState(leerCarrito);
 
   const [ordenExitosa, setOrdenExitosa] = useState(null);
   const [cargandoPago, setCargandoPago] = useState(false);
   const [errorPago, setErrorPago] = useState('');
+
+  useEffect(() => {
+    guardarCarrito(items);
+  }, [items]);
 
   // Funciones de control del carrito
   const incrementarCantidad = (id) => {
@@ -79,6 +79,7 @@ export default function Carrito() {
           currency: 'CLP',
         }).format(pedido.total),
       });
+      guardarCarrito([]);
       setItems([]); // Vaciamos el carrito tras la confirmación exitosa
     } catch (err) {
       // Mostramos el mensaje que devuelve el backend (ej: "Stock insuficiente para: Pikachu")
@@ -240,14 +241,6 @@ export default function Carrito() {
                 >
                   {cargandoPago ? 'Procesando...' : 'PAGAR RÁPIDO'}
                 </button>
-                <Link
-                  to="/checkout"
-                  className={`btn btn-outline-success w-100 fw-bold py-2 ${
-                    items.length === 0 ? 'disabled' : ''
-                  }`}
-                >
-                  Proceder al Checkout →
-                </Link>
               </div>
             </div>
           </div>

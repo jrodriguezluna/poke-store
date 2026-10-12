@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import { useParams, Link } from 'react-router-dom';
 import { getProducto } from '../services/api';
 import { PRODUCTOS_MOCK } from '../data/productos';
+import { agregarProductoCarrito } from '../utils/carrito';
 
 export default function Detalle() {
   const { id } = useParams();
@@ -71,6 +72,7 @@ export default function Detalle() {
   };
 
   const handleAgregarAlCarrito = () => {
+    agregarProductoCarrito(producto, cantidad);
     setAlertaAgregado(true);
     setTimeout(() => {
       setAlertaAgregado(false);
