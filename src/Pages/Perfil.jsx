@@ -51,9 +51,14 @@ function Perfil() {
           </div>
 
           {user.rol === 'admin' && (
-            <Link to="/admin/usuarios" className="btn btn-danger w-100 mt-4">
-              Administrar usuarios
-            </Link>
+            <>
+              <Link to="/admin/usuarios" className="btn btn-danger w-100 mt-4">
+                Administrar usuarios
+              </Link>
+              <Link to="/admin/productos" className="btn btn-danger w-100 mt-2">
+                Administrar productos
+              </Link>
+            </>
           )}
 
           <button type="button" className="btn btn-outline-danger w-100 mt-3" onClick={cerrarSesion}>
