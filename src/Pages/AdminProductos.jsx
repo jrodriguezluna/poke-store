@@ -3,11 +3,10 @@ import { Navigate } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
 import { getProductos, crearProducto, actualizarProducto, eliminarProducto } from "../services/api";
 
-const VACIO = { nombre: "", tipo: "", categoria: "", precio: 0, stock: 0, imagen: "", descripcion: "" };
+const VACIO = { nombre: "", categoria: "", precio: 0, stock: 0, imagen: "", descripcion: "" };
 
 const CAMPOS = [
   { name: "nombre", placeholder: "nombre", obligatorio: true },
-  { name: "tipo", placeholder: "tipo (ej: fuego)" },
   { name: "categoria", placeholder: "categoria (ej: Peluches)" },
   { name: "precio", placeholder: "precio", type: "number", obligatorio: true },
   { name: "stock", placeholder: "stock", type: "number", obligatorio: true },
@@ -32,7 +31,6 @@ export default function AdminProductos() {
     setError("");
     const datos = {
       ...editando,
-      tipo: editando.tipo || null,
       categoria: editando.categoria || null,
       precio: Number(editando.precio),
       stock: Number(editando.stock),
