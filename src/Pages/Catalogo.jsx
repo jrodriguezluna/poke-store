@@ -1,5 +1,6 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import ProductCard from '../components/ProductCard';
+import { getProductos } from '../services/api';
 import { PRODUCTOS_MOCK } from '../data/productos';
 
 const CATEGORIAS = [
@@ -16,8 +17,24 @@ export default function Catalogo() {
   const [busqueda, setBusqueda] = useState('');
   const [categoriaSeleccionada, setCategoriaSeleccionada] = useState('TODOS');
 
+  // Inicializamos con los datos mock como fallback inmediato.
+  // Si el backend está disponible, useEffect los reemplaza con datos reales.
+  const [productos, setProductos] = useState(PRODUCTOS_MOCK);
+  const [cargando, setCargando] = useState(false);
+
+  useEffect(() => {
+    setCargando(true);
+    getProductos()
+      .then((data) => setProductos(data))
+      .catch(() => {
+        // Backend no disponible: mantenemos los datos mock ya cargados en el estado inicial
+        console.warn('[Catálogo] API no disponible, mostrando datos locales.');
+      })
+      .finally(() => setCargando(false));
+  }, []);
+
   // Filtrado dinámico de productos
-  const productosFiltrados = PRODUCTOS_MOCK.filter((producto) => {
+  const productosFiltrados = productos.filter((producto) => {
     const coincideCategoria =
       categoriaSeleccionada === 'TODOS' || producto.categoria === categoriaSeleccionada;
     const coincideBusqueda = producto.nombre
@@ -76,13 +93,21 @@ export default function Catalogo() {
           <div className="d-flex justify-content-between align-items-center mb-3">
             <h3 className="fw-bold mb-0">Catálogo de Productos</h3>
             <span className="text-muted small" id="contador-productos-visibles">
-              {productosFiltrados.length === 1
+              {cargando
+                ? 'Cargando productos...'
+                : productosFiltrados.length === 1
                 ? 'Mostrando 1 producto'
                 : `Mostrando ${productosFiltrados.length} productos`}
             </span>
           </div>
 
-          {productosFiltrados.length === 0 ? (
+          {cargando ? (
+            <div className="text-center py-5">
+              <div className="spinner-border text-danger" role="status">
+                <span className="visually-hidden">Cargando...</span>
+              </div>
+            </div>
+          ) : productosFiltrados.length === 0 ? (
             <div className="alert alert-info text-center py-4" role="alert">
               No se encontraron productos que coincidan con tu búsqueda.
             </div>

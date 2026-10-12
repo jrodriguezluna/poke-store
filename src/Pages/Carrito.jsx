@@ -1,15 +1,21 @@
-  import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
-import { PRODUCTOS_MOCK } from '../data/productos';
+import { useAuth } from '../context/AuthContext';
+import { crearPedido } from '../services/api';
+import { guardarCarrito, leerCarrito } from '../utils/carrito';
 
 export default function Carrito() {
-  // Inicializamos el carrito con un par de productos del mock para poder probarlo de inmediato
-  const [items, setItems] = useState([
-    { ...PRODUCTOS_MOCK[0], cantidad: 2 }, // Pikachu x2
-    { ...PRODUCTOS_MOCK[1], cantidad: 1 }, // Charizard x1
-  ]);
+  const { user } = useAuth();
+
+  const [items, setItems] = useState(leerCarrito);
 
   const [ordenExitosa, setOrdenExitosa] = useState(null);
+  const [cargandoPago, setCargandoPago] = useState(false);
+  const [errorPago, setErrorPago] = useState('');
+
+  useEffect(() => {
+    guardarCarrito(items);
+  }, [items]);
 
   // Funciones de control del carrito
   const incrementarCantidad = (id) => {
@@ -46,13 +52,41 @@ export default function Carrito() {
     currency: 'CLP',
   }).format(total);
 
-  const handlePagar = () => {
-    const ordenId = Math.floor(1000 + Math.random() * 9000);
-    setOrdenExitosa({
-      id: ordenId,
-      monto: totalFormateado,
-    });
-    setItems([]); // Vaciamos el carrito tras procesar la compra
+  const handlePagar = async () => {
+    // Requiere sesión activa para asociar el pedido a un usuario
+    if (!user) {
+      setErrorPago('Debes iniciar sesión para poder pagar.');
+      return;
+    }
+
+    setErrorPago('');
+    setCargandoPago(true);
+
+    try {
+      // Llamada real a POST /api/pedidos — el backend descontará el stock
+      const pedido = await crearPedido({
+        usuarioId: user.id,
+        items: items.map((item) => ({
+          productoId: item.id,
+          cantidad: item.cantidad,
+        })),
+      });
+
+      setOrdenExitosa({
+        id: pedido.id,         // ID real generado por la base de datos
+        monto: new Intl.NumberFormat('es-CL', {
+          style: 'currency',
+          currency: 'CLP',
+        }).format(pedido.total),
+      });
+      guardarCarrito([]);
+      setItems([]); // Vaciamos el carrito tras la confirmación exitosa
+    } catch (err) {
+      // Mostramos el mensaje que devuelve el backend (ej: "Stock insuficiente para: Pikachu")
+      setErrorPago(err.message || 'Ocurrió un error al procesar el pago. Intenta nuevamente.');
+    } finally {
+      setCargandoPago(false);
+    }
   };
 
   return (
@@ -184,23 +218,29 @@ export default function Carrito() {
                 </span>
               </div>
 
+              {/* Aviso si no hay sesión activa */}
+              {!user && items.length > 0 && (
+                <div className="alert alert-warning small py-2 text-center mb-3" role="alert">
+                  <Link to="/login" className="fw-bold">Inicia sesión</Link> para poder pagar.
+                </div>
+              )}
+
+              {/* Error del backend (ej: stock insuficiente) */}
+              {errorPago && (
+                <div className="alert alert-danger small py-2 text-center mb-3" role="alert">
+                  {errorPago}
+                </div>
+              )}
+
               <div className="d-flex flex-column gap-2">
                 <button
                   className="btn btn-success w-100 btn-lg fw-bold py-3 shadow-sm"
                   id="btn-pagar"
-                  disabled={items.length === 0}
+                  disabled={items.length === 0 || cargandoPago}
                   onClick={handlePagar}
                 >
-                  PAGAR RÁPIDO
+                  {cargandoPago ? 'Procesando...' : 'PAGAR RÁPIDO'}
                 </button>
-                <Link
-                  to="/checkout"
-                  className={`btn btn-outline-success w-100 fw-bold py-2 ${
-                    items.length === 0 ? 'disabled' : ''
-                  }`}
-                >
-                  Proceder al Checkout →
-                </Link>
               </div>
             </div>
           </div>

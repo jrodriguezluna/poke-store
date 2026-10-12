@@ -7,7 +7,6 @@ import Catalogo from './Pages/Catalogo';
 import Nosotros from './Pages/Nosotros';
 import Detalle from './Pages/Detalle';
 import Carrito from './Pages/Carrito';
-import Checkout from './Pages/Checkout';
 import Contacto from './Pages/Contacto';
 import Perfil from './Pages/Perfil';
 import Login from './Pages/Login';
@@ -28,7 +27,6 @@ function App() {
             <Route path="/nosotros" element={<Nosotros />} />
             <Route path="/producto/:id" element={<Detalle />} />
             <Route path="/carrito" element={<Carrito />} />
-            <Route path="/checkout" element={<Checkout />} />
             <Route path="/contacto" element={<Contacto />} />
             <Route path="/perfil" element={<Perfil />} />
             <Route path="/registro" element={<Registro />} />
