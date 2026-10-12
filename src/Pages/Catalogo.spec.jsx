@@ -17,6 +17,25 @@ describe('Catalogo Component', () => {
     );
   });
 
+  it('renderiza los productos recibidos desde la API', async () => {
+    render(
+      <MemoryRouter>
+        <Catalogo />
+      </MemoryRouter>
+    );
+
+    await waitFor(() => {
+      expect(screen.getByText('Peluche Pikachu 30cm')).toBeTruthy();
+    });
+
+    expect(screen.getByText('Figura Coleccionable Charizard')).toBeTruthy();
+    expect(screen.getAllByRole('link', { name: /ver detalle/i }).length)
+      .toBe(PRODUCTOS_MOCK.length);
+    PRODUCTOS_MOCK.forEach((producto) => {
+      expect(screen.getByText(producto.nombre)).toBeTruthy();
+    });
+  });
+
   it('filtra los productos por nombre al escribir en el campo de búsqueda', async () => {
     render(
       <MemoryRouter>
@@ -24,19 +43,13 @@ describe('Catalogo Component', () => {
       </MemoryRouter>
     );
 
-    // Esperamos a que el fetch resuelva y los productos aparezcan en pantalla
     await waitFor(() => {
       expect(screen.getByText('Peluche Pikachu 30cm')).toBeTruthy();
     });
 
-    // Verificamos que Charizard también esté visible al inicio
-    expect(screen.getByText('Figura Coleccionable Charizard')).toBeTruthy();
-
-    // Escribimos "Pikachu" en el buscador
     const inputBusqueda = screen.getByPlaceholderText('Ej: Pikachu, Peluche...');
     fireEvent.change(inputBusqueda, { target: { value: 'Pikachu' } });
 
-    // Verificamos que solo quede Pikachu visible
     expect(screen.getByText('Peluche Pikachu 30cm')).toBeTruthy();
     expect(screen.queryByText('Figura Coleccionable Charizard')).toBeNull();
   });
