@@ -3,6 +3,14 @@ import { MemoryRouter, Route, Routes } from 'react-router-dom';
 import Detalle from './Detalle';
 
 describe('Detalle Component', () => {
+  beforeEach(() => {
+    localStorage.removeItem('poke_carrito');
+  });
+
+  afterEach(() => {
+    localStorage.removeItem('poke_carrito');
+  });
+
   it('muestra la información del producto según la URL y permite agregar al carrito', () => {
     // Renderizamos Detalle simulando la ruta /producto/1 (Peluche Pikachu)
     render(
@@ -29,6 +37,9 @@ describe('Detalle Component', () => {
     expect(
       screen.getByText(/¡Producto añadido al carrito con éxito!\s*\(2 unidades\)/)
     ).toBeTruthy();
+    const carritoGuardado = JSON.parse(localStorage.getItem('poke_carrito'));
+    expect(carritoGuardado[0].id).toBe(1);
+    expect(carritoGuardado[0].cantidad).toBe(2);
   });
 });
 

@@ -14,7 +14,8 @@ async function request(path, options = {}) {
 
   if (!res.ok) {
     const err = await res.json().catch(() => ({}));
-    throw new Error(err.error || "Error en la petición");
+    // FastAPI devuelve los errores en { "detail": "..." }
+    throw new Error(err.detail || err.error || 'Error en la petición');
   }
 
   if (res.status === 204) return null;
