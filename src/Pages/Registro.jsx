@@ -14,6 +14,8 @@ const inicial = {
   confirmar: '',
 };
 
+const DOMINIOS_PERMITIDOS = ['gmail.com', 'outlook.com', 'duoc.cl', 'duocuc.cl'];
+
 function Registro() {
   const navigate = useNavigate();
   const [datos, setDatos] = useState(inicial);
@@ -37,9 +39,14 @@ function Registro() {
     if (datos.nombre.trim() === '') {
       nuevos.nombre = 'El nombre es obligatorio';
     }
-    if (!/^\S+@\S+\.\S+$/.test(datos.email)) {
+
+    const correo = datos.email.trim().toLowerCase();
+    if (!/^\S+@\S+\.\S+$/.test(correo)) {
       nuevos.email = 'Email inválido';
+    } else if (!DOMINIOS_PERMITIDOS.includes(correo.split('@')[1])) {
+      nuevos.email = 'Solo se permiten correos @gmail.com, @outlook.com o @duoc.cl';
     }
+
     if (datos.telefono.trim() !== '' && !/^(\+?56)?\s?9\s?\d{4}\s?\d{4}$/.test(datos.telefono.trim())) {
       nuevos.telefono = 'Ingresa un celular válido, ej: +56 9 1234 5678';
     }
@@ -132,7 +139,7 @@ function Registro() {
           <form onSubmit={manejarEnvio} noValidate>
             <div className="row g-3">
               {campo('nombre', 'Nombre', 'text', 'Ash Ketchum')}
-              {campo('email', 'Email', 'email', 'ash@pokestore.cl', 'col-12 col-md-6')}
+              {campo('email', 'Email', 'email', 'ash@gmail.com', 'col-12 col-md-6')}
               {campo('telefono', 'Teléfono (opcional)', 'tel', '+56 9 1234 5678', 'col-12 col-md-6')}
               {campo('direccion', 'Dirección', 'text', 'Av. Siempre Viva 742, depto 21')}
               {selector('region', 'Región', regiones.map((r) => r.nombre), 'col-12 col-md-6')}
