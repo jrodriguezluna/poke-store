@@ -51,7 +51,11 @@ export default function Nosotros() {
         }
       `}</style>
 
-      <h1 className="text-center nosotros-section pb-0">Sobre Nosotros</h1>
+      <header className="text-center nosotros-section pb-0">
+        <p className="text-danger fw-bold text-uppercase mb-2">PokeStore · Nuestra historia</p>
+        <h1 className="fw-bold display-5 mb-0">Sobre Nosotros</h1>
+        <p className="text-muted mt-3 mb-0">Conoce al equipo y lo que nos mueve.</p>
+      </header>
 
       {/* Orígenes */}
       <section className="nosotros-section">
