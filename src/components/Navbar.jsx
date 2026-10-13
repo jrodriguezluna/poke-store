@@ -8,6 +8,7 @@ import './Navbar.css';
 const enlacesIzquierda = [
   { to: '/', label: 'Inicio', end: true },
   { to: '/catalogo', label: 'Catálogo' },
+  { to: '/blogs', label: 'Blogs' },
   { to: '/nosotros', label: 'Nosotros' },
   { to: '/perfil', label: 'Perfil' },
 ];
