@@ -12,6 +12,7 @@ import Perfil from './Pages/Perfil';
 import Login from './Pages/Login';
 import AdminUsuarios from "./Pages/AdminUsuarios";
 import AdminProductos from "./Pages/AdminProductos";
+import Blogs from './Pages/Blogs';
 import { AuthProvider } from './context/AuthContext';
 
 function App() {
@@ -28,6 +29,7 @@ function App() {
             <Route path="/producto/:id" element={<Detalle />} />
             <Route path="/carrito" element={<Carrito />} />
             <Route path="/contacto" element={<Contacto />} />
+            <Route path="/blogs" element={<Blogs />} />
             <Route path="/perfil" element={<Perfil />} />
             <Route path="/registro" element={<Registro />} />
             <Route path="/login" element={<Login />} />

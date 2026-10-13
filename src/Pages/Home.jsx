@@ -1,14 +1,8 @@
+import { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import Carousel from 'react-bootstrap/Carousel';
-
-const artwork = (id) =>
-  `https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/official-artwork/${id}.png`;
-
-const slides = [
-  { id: 25, titulo: 'Pikachu', texto: 'Peluches suaves para toda la familia' },
-  { id: 6, titulo: 'Charizard', texto: 'Figuras coleccionables de edición especial' },
-  { id: 150, titulo: 'Mewtwo', texto: 'Cartas raras para verdaderos entrenadores' },
-];
+import { getProductos } from '../services/api';
+import { PRODUCTOS_MOCK } from '../data/productos';
 
 const reviews = [
   { nombre: 'Esteban R.', estrellas: 4, texto: 'Mi peluche de Pikachu llegó perfecto thx.' },
@@ -19,6 +13,14 @@ const reviews = [
 const estrellas = (n) => '★'.repeat(n) + '☆'.repeat(5 - n);
 
 export default function Home() {
+  const [productos, setProductos] = useState(() => PRODUCTOS_MOCK.slice(0, 3));
+
+  useEffect(() => {
+    getProductos()
+      .then((data) => setProductos(data.slice(0, 3)))
+      .catch(() => {});
+  }, []);
+
   return (
     <div className="container">
       <section className="text-center mb-5">
@@ -30,18 +32,24 @@ export default function Home() {
         </p>
 
         <Carousel data-bs-theme="dark">
-          {slides.map(({ id, titulo, texto }) => (
-            <Carousel.Item key={id}>
-              <div className="d-flex flex-column align-items-center px-5 pt-3 pb-5">
+          {productos.map((producto) => (
+            <Carousel.Item key={producto.id}>
+              <Link
+                to={`/producto/${producto.id}`}
+                className="d-flex flex-column align-items-center px-5 pt-3 pb-5 text-decoration-none text-dark"
+              >
                 <img
-                  src={artwork(id)}
-                  alt={titulo}
+                  src={producto.imagen}
+                  alt={producto.nombre}
                   className="d-block mb-3"
-                  style={{ height: 'clamp(200px, 40vw, 360px)' }}
+                  style={{ height: 'clamp(200px, 40vw, 360px)', maxWidth: '100%', objectFit: 'contain' }}
                 />
-                <h2 className="h4">{titulo}</h2>
-                <p className="mb-0 text-secondary">{texto}</p>
-              </div>
+                <h2 className="h4 text-center">{producto.nombre}</h2>
+                <p className="mb-1 text-secondary">{producto.categoria || producto.tipo}</p>
+                <p className="mb-0 fw-bold text-danger">
+                  {new Intl.NumberFormat('es-CL', { style: 'currency', currency: 'CLP' }).format(producto.precio)}
+                </p>
+              </Link>
             </Carousel.Item>
           ))}
         </Carousel>
