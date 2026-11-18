@@ -1,5 +1,6 @@
 import { render, screen, fireEvent } from '@testing-library/react';
 import { MemoryRouter, Route, Routes } from 'react-router-dom';
+import { ProductosProvider } from '../context/ProductosContext';
 import Detalle from './Detalle';
 
 describe('Detalle Component', () => {
@@ -16,7 +17,7 @@ describe('Detalle Component', () => {
     render(
       <MemoryRouter initialEntries={['/producto/1']}>
         <Routes>
-          <Route path="/producto/:id" element={<Detalle />} />
+          <Route path="/producto/:id" element={<ProductosProvider><Detalle /></ProductosProvider>} />
         </Routes>
       </MemoryRouter>
     );

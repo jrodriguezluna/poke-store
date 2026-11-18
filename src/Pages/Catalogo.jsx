@@ -1,7 +1,6 @@
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import ProductCard from '../components/ProductCard';
-import { getProductos } from '../services/api';
-import { PRODUCTOS_MOCK } from '../data/productos';
+import { useProductos } from '../context/ProductosContext';
 
 const CATEGORIAS = [
   { id: 'TODOS', label: 'Todas las Categorías' },
@@ -17,21 +16,9 @@ export default function Catalogo() {
   const [busqueda, setBusqueda] = useState('');
   const [categoriaSeleccionada, setCategoriaSeleccionada] = useState('TODOS');
 
-  // Inicializamos con los datos mock como fallback inmediato.
-  // Si el backend está disponible, useEffect los reemplaza con datos reales.
-  const [productos, setProductos] = useState(PRODUCTOS_MOCK);
-  const [cargando, setCargando] = useState(false);
-
-  useEffect(() => {
-    setCargando(true);
-    getProductos()
-      .then((data) => setProductos(data))
-      .catch(() => {
-        // Backend no disponible: mantenemos los datos mock ya cargados en el estado inicial
-        console.warn('[Catálogo] API no disponible, mostrando datos locales.');
-      })
-      .finally(() => setCargando(false));
-  }, []);
+  // Los productos vienen del contexto compartido: si el admin crea, edita o
+  // elimina algo desde el panel lateral, el catálogo se actualiza al instante.
+  const { productos, cargando } = useProductos();
 
   // Filtrado dinámico de productos
   const productosFiltrados = productos.filter((producto) => {

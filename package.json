@@ -12,6 +12,7 @@
     "test:coverage": "karma start karma.conf.cjs --single-run"
   },
   "dependencies": {
+    "@react-oauth/google": "^0.13.5",
     "bootstrap": "^5.3.8",
     "react": "^19.2.8",
     "react-bootstrap": "^2.10.10",

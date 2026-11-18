@@ -10,15 +10,15 @@ import Carrito from './Pages/Carrito';
 import Contacto from './Pages/Contacto';
 import Perfil from './Pages/Perfil';
 import Login from './Pages/Login';
-import AdminUsuarios from "./Pages/AdminUsuarios";
-import AdminProductos from "./Pages/AdminProductos";
 import Blogs from './Pages/Blogs';
 import { AuthProvider } from './context/AuthContext';
+import { ProductosProvider } from './context/ProductosContext';
 
 function App() {
   return (
     <BrowserRouter>
     <AuthProvider>
+    <ProductosProvider>
       <div className="d-flex flex-column min-vh-100">
         <Navbar />
         <main className="flex-grow-1 py-4 py-md-5">
@@ -33,12 +33,11 @@ function App() {
             <Route path="/perfil" element={<Perfil />} />
             <Route path="/registro" element={<Registro />} />
             <Route path="/login" element={<Login />} />
-            <Route path="/admin/usuarios" element={<AdminUsuarios />} />
-            <Route path="/admin/productos" element={<AdminProductos />} />
           </Routes>
         </main>
         <Footer />
       </div>
+    </ProductosProvider>
       </AuthProvider>
     </BrowserRouter>
   );

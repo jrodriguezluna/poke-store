@@ -1,7 +1,6 @@
 import { useState, useEffect } from 'react';
 import { useParams, Link } from 'react-router-dom';
-import { getProducto } from '../services/api';
-import { PRODUCTOS_MOCK } from '../data/productos';
+import { useProductos } from '../context/ProductosContext';
 import { agregarProductoCarrito } from '../utils/carrito';
 
 export default function Detalle() {
@@ -9,24 +8,14 @@ export default function Detalle() {
   const [cantidad, setCantidad] = useState(1);
   const [alertaAgregado, setAlertaAgregado] = useState(false);
 
-  // Fallback inmediato desde el mock para que la UI no quede en blanco
-  // mientras llega la respuesta de la API (y para que los tests funcionen sin backend)
-  const [producto, setProducto] = useState(
-    () => PRODUCTOS_MOCK.find((item) => item.id === Number(id)) || null
-  );
-  const [cargando, setCargando] = useState(false);
+  // El producto se busca en el contexto compartido: si el admin lo edita o lo
+  // elimina desde el panel lateral, esta vista se actualiza al instante.
+  const { productos, cargando } = useProductos();
+  const producto = productos.find((item) => item.id === Number(id)) || null;
 
   useEffect(() => {
     setCantidad(1);
     setAlertaAgregado(false);
-    setCargando(true);
-    getProducto(id)
-      .then((data) => setProducto(data))
-      .catch(() => {
-        // Si la API falla mantenemos el dato mock ya cargado
-        console.warn(`[Detalle] API no disponible para producto ${id}, usando datos locales.`);
-      })
-      .finally(() => setCargando(false));
   }, [id]);
 
   if (cargando && !producto) {

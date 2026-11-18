@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import { login as loginApi } from '../services/api';
+import BotonGoogle from '../components/GoogleButtom';
 
 function Login() {
   const navigate = useNavigate();
@@ -45,48 +46,51 @@ function Login() {
   };
 
   return (
-    <div className="container py-5">
-      <div className="row justify-content-center">
-        <div className="col-12 col-sm-10 col-md-6 col-lg-4">
-          <h1 className="h3 mb-4 text-center">Iniciar sesión</h1>
+    <div className="container py-5 d-flex justify-content-center">
+      <div
+        className="card shadow-lg border-0 rounded-4 p-4 p-md-5 w-100"
+        style={{ maxWidth: '420px' }}
+      >
+        <h1 className="h3 mb-4 text-center">Iniciar sesión</h1>
 
-          <form onSubmit={manejarEnvio} noValidate>
-            <div className="mb-3">
-              <label htmlFor="email" className="form-label">Email</label>
-              <input
-                id="email"
-                type="email"
-                className={'form-control' + (errores.email ? ' is-invalid' : '')}
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
-                placeholder="ash@pokestore.cl"
-              />
-              {errores.email && <div className="invalid-feedback">{errores.email}</div>}
-            </div>
+        <form onSubmit={manejarEnvio} noValidate>
+          <div className="mb-3">
+            <label htmlFor="email" className="form-label">Email</label>
+            <input
+              id="email"
+              type="email"
+              className={'form-control' + (errores.email ? ' is-invalid' : '')}
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+              placeholder="ash@pokestore.cl"
+            />
+            {errores.email && <div className="invalid-feedback">{errores.email}</div>}
+          </div>
 
-            <div className="mb-4">
-              <label htmlFor="password" className="form-label">Contraseña</label>
-              <input
-                id="password"
-                type="password"
-                className={'form-control' + (errores.password ? ' is-invalid' : '')}
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
-              />
-              {errores.password && <div className="invalid-feedback">{errores.password}</div>}
-            </div>
+          <div className="mb-4">
+            <label htmlFor="password" className="form-label">Contraseña</label>
+            <input
+              id="password"
+              type="password"
+              className={'form-control' + (errores.password ? ' is-invalid' : '')}
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+            />
+            {errores.password && <div className="invalid-feedback">{errores.password}</div>}
+          </div>
 
-            {errorGeneral && <div className="alert alert-danger">{errorGeneral}</div>}
+          {errorGeneral && <div className="alert alert-danger">{errorGeneral}</div>}
 
-            <button type="submit" className="btn btn-danger w-100" disabled={enviando}>
-              {enviando ? 'Ingresando...' : 'Ingresar'}
-            </button>
-          </form>
+          <button type="submit" className="btn btn-danger w-100 rounded-3" disabled={enviando}>
+            {enviando ? 'Ingresando...' : 'Ingresar'}
+          </button>
+        </form>
 
-          <p className="text-center small mt-4 mb-0">
-            ¿No tienes cuenta? <Link to="/registro">Crea una cuenta</Link>
-          </p>
-        </div>
+        <BotonGoogle onError={setErrorGeneral} />
+
+        <p className="text-center small mt-4 mb-0">
+          ¿No tienes cuenta? <Link to="/registro">Crea una cuenta</Link>
+        </p>
       </div>
     </div>
   );

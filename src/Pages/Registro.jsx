@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { regiones } from '../utils/regiones';
 import { registrarUsuario } from '../services/api';
+import BotonGoogle from '../components/GoogleButtom';
 
 const inicial = {
   nombre: '',
@@ -131,34 +132,37 @@ function Registro() {
   );
 
   return (
-    <div className="container py-5">
-      <div className="row justify-content-center">
-        <div className="col-12 col-md-8 col-lg-6">
-          <h1 className="h3 mb-4 text-center">Crear cuenta</h1>
+    <div className="container py-5 d-flex justify-content-center">
+      <div
+        className="card shadow-lg border-0 rounded-4 p-4 p-md-5 w-100"
+        style={{ maxWidth: '560px' }}
+      >
+        <h1 className="h3 mb-4 text-center">Crear cuenta</h1>
 
-          <form onSubmit={manejarEnvio} noValidate>
-            <div className="row g-3">
-              {campo('nombre', 'Nombre', 'text', 'Ash Ketchum')}
-              {campo('email', 'Email', 'email', 'ash@gmail.com', 'col-12 col-md-6')}
-              {campo('telefono', 'Teléfono (opcional)', 'tel', '+56 9 1234 5678', 'col-12 col-md-6')}
-              {campo('direccion', 'Dirección', 'text', 'Av. Siempre Viva 742, depto 21')}
-              {selector('region', 'Región', regiones.map((r) => r.nombre), 'col-12 col-md-6')}
-              {selector('comuna', 'Comuna', comunas, 'col-12 col-md-6', datos.region === '')}
-              {campo('password', 'Contraseña', 'password', '', 'col-12 col-md-6')}
-              {campo('confirmar', 'Confirmar contraseña', 'password', '', 'col-12 col-md-6')}
-            </div>
+        <form onSubmit={manejarEnvio} noValidate>
+          <div className="row g-3">
+            {campo('nombre', 'Nombre', 'text', 'Ash Ketchum')}
+            {campo('email', 'Email', 'email', 'ash@gmail.com', 'col-12 col-md-6')}
+            {campo('telefono', 'Teléfono (opcional)', 'tel', '+56 9 1234 5678', 'col-12 col-md-6')}
+            {campo('direccion', 'Dirección', 'text', 'Av. Siempre Viva 742, depto 21')}
+            {selector('region', 'Región', regiones.map((r) => r.nombre), 'col-12 col-md-6')}
+            {selector('comuna', 'Comuna', comunas, 'col-12 col-md-6', datos.region === '')}
+            {campo('password', 'Contraseña', 'password', '', 'col-12 col-md-6')}
+            {campo('confirmar', 'Confirmar contraseña', 'password', '', 'col-12 col-md-6')}
+          </div>
 
-            {errorGeneral && <div className="alert alert-danger mt-3 mb-0">{errorGeneral}</div>}
+          {errorGeneral && <div className="alert alert-danger mt-3 mb-0">{errorGeneral}</div>}
 
-            <button type="submit" className="btn btn-danger w-100 mt-4" disabled={enviando}>
-              {enviando ? 'Creando cuenta...' : 'Crear cuenta'}
-            </button>
-          </form>
+          <button type="submit" className="btn btn-danger w-100 mt-4 rounded-0" disabled={enviando}>
+            {enviando ? 'Creando cuenta...' : 'Crear cuenta'}
+          </button>
+        </form>
 
-          <p className="text-center small mt-4 mb-0">
-            ¿Ya tienes cuenta? <Link to="/login">Inicia sesión</Link>
-          </p>
-        </div>
+        <BotonGoogle onError={setErrorGeneral} />
+
+        <p className="text-center small mt-4 mb-0">
+          ¿Ya tienes cuenta? <Link to="/login">Inicia sesión</Link>
+        </p>
       </div>
     </div>
   );

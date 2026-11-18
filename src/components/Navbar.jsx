@@ -3,6 +3,7 @@ import Container from 'react-bootstrap/Container';
 import Nav from 'react-bootstrap/Nav';
 import Navbar from 'react-bootstrap/Navbar';
 import { useAuth } from '../context/AuthContext';
+import AdminPanel from './AdminPanel';
 import './Navbar.css';
 
 const enlacesIzquierda = [
@@ -34,6 +35,7 @@ function AppNavbar() {
   return (
     <Navbar expand="lg" bg="dark" data-bs-theme="dark" sticky="top">
       <Container>
+        <AdminPanel />
         <Navbar.Brand as={NavLink} to="/" className="fw-bold">
           <span className="text-danger">Poke</span>Store
         </Navbar.Brand>

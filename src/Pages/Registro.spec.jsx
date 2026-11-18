@@ -17,7 +17,7 @@ describe('Vista Registro', () => {
 
     fireEvent.change(screen.getByLabelText('Contraseña'), { target: { value: '123456' } });
     fireEvent.change(screen.getByLabelText('Confirmar contraseña'), { target: { value: '654321' } });
-    fireEvent.click(screen.getByRole('button', { name: /crear cuenta/i }));
+    fireEvent.click(screen.gteByRole('button', { name: /crear cuenta/i }));
 
     expect(screen.getByText(/las contraseñas no coinciden/i)).toBeTruthy();
     console.log('[LOG][Registro] OK: error de contraseñas mostrado');

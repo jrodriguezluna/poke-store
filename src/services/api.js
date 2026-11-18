@@ -37,6 +37,9 @@ export const modificarUsuario = (id, datos) =>
 export const eliminarUsuario = (id) =>
   request(`/api/usuarios/${id}`, { method: "DELETE" });
 
+export const loginGoogle = (credential) =>
+  request("/api/auth/google", { method: "POST", body: JSON.stringify({ credential }) });
+
 // ---------- Productos ----------
 export const getProductos = () => request("/api/productos");
 
@@ -52,7 +55,7 @@ export const eliminarProducto = (id) =>
   request(`/api/productos/${id}`, { method: "DELETE" });
 
 // ---------- Pedidos ----------
-export const getPedidos = () => request("/api/pedidos");
+export const getPedidos = (usuarioId) => request(`/api/pedidos?usuarioId=${usuarioId}`);
 
 export const crearPedido = (datos) =>
   request("/api/pedidos", { method: "POST", body: JSON.stringify(datos) });

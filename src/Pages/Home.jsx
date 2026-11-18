@@ -1,8 +1,6 @@
-import { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import Carousel from 'react-bootstrap/Carousel';
-import { getProductos } from '../services/api';
-import { PRODUCTOS_MOCK } from '../data/productos';
+import { useProductos } from '../context/ProductosContext';
 
 const reviews = [
   { nombre: 'Esteban R.', estrellas: 4, texto: 'Mi peluche de Pikachu llegó perfecto thx.' },
@@ -13,13 +11,9 @@ const reviews = [
 const estrellas = (n) => '★'.repeat(n) + '☆'.repeat(5 - n);
 
 export default function Home() {
-  const [productos, setProductos] = useState(() => PRODUCTOS_MOCK.slice(0, 3));
-
-  useEffect(() => {
-    getProductos()
-      .then((data) => setProductos(data.slice(0, 3)))
-      .catch(() => {});
-  }, []);
+  // Los 3 primeros productos del contexto compartido (se actualizan solos
+  // cuando el admin guarda cambios desde el panel lateral).
+  const productos = useProductos().productos.slice(0, 3);
 
   return (
     <div className="container">

@@ -1,0 +1,326 @@
+@import url('https://fonts.googleapis.com/css2?family=Caveat+Brush&display=swap');
+
+/* ---------- Fondo de la página: pokébolas de marca de agua ---------- */
+
+.perfil-fondo {
+  --perfil-azul: #2b3a67;
+  --perfil-rojo: #e5383b;
+  --perfil-rojo-oscuro: #c92a2d;
+}
+
+/* ---------- Tarjeta holográfica ---------- */
+.perfil-tarjeta {
+  position: relative;
+  overflow: hidden;
+  max-width: 680px;
+  margin: 0 auto;
+  border-radius: 18px;
+  border: 1px solid rgba(255, 255, 255, 0.75);
+  color: var(--perfil-azul);
+  background:
+    linear-gradient(
+      115deg,
+      rgba(255, 120, 120, 0.38) 0%,
+      rgba(255, 226, 120, 0.32) 22%,
+      rgba(140, 230, 200, 0.3) 42%,
+      rgba(120, 180, 255, 0.34) 62%,
+      rgba(190, 150, 255, 0.36) 82%,
+      rgba(255, 150, 200, 0.34) 100%
+    ),
+    rgba(255, 255, 255, 0.55);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  box-shadow:
+    0 18px 40px rgba(30, 40, 80, 0.22),
+    inset 0 0 0 1px rgba(255, 255, 255, 0.45);
+}
+
+/* Pokébola grande y suave detrás del contenido */
+.perfil-tarjeta::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  opacity: 0.5;
+  background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 200 200' fill='none' stroke='%23ffffff' stroke-width='6' stroke-linecap='round'%3E%3Ccircle cx='100' cy='100' r='92'/%3E%3Cpath d='M8 100H70M130 100H192'/%3E%3Ccircle cx='100' cy='100' r='30'/%3E%3C/svg%3E")
+    center 70% / 340px no-repeat;
+}
+
+.perfil-tarjeta > * {
+  position: relative;
+}
+
+/* ---------- Cabecera ---------- */
+.perfil-cabecera {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  padding: 1.1rem 1.1rem 0.9rem;
+}
+
+.perfil-avatar {
+  flex: none;
+  width: 84px;
+  height: 84px;
+  overflow: hidden;
+  border-radius: 14px;
+  border: 2px solid rgba(255, 255, 255, 0.85);
+  background: linear-gradient(160deg, #cfe6ff, #e8f3ff);
+  box-shadow: 0 4px 10px rgba(30, 40, 80, 0.2);
+}
+
+.perfil-avatar img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  max-width: none;
+  object-fit: cover;
+  object-position: 50% 0;
+  transform: translateY(12px) scale(2.9);
+  transform-origin: 50% 20%;
+}
+
+.perfil-cabecera__texto {
+  flex: 1;
+  min-width: 0;
+}
+
+.perfil-saludo {
+  margin: 0 0 0.3rem;
+  font-family: 'Caveat Brush', 'Comic Sans MS', cursive;
+  font-size: clamp(1.6rem, 5vw, 2.1rem);
+  font-weight: 400;
+  line-height: 1.1;
+  color: var(--perfil-azul);
+  overflow-wrap: anywhere;
+}
+
+.perfil-nivel {
+  display: flex;
+  justify-content: space-between;
+  gap: 0.5rem;
+  margin-bottom: 0.25rem;
+  font-size: 0.82rem;
+}
+
+.perfil-barra {
+  height: 8px;
+  overflow: hidden;
+  border-radius: 999px;
+  background: rgba(60, 70, 100, 0.35);
+}
+
+.perfil-barra__relleno {
+  height: 100%;
+  border-radius: 999px;
+  background: linear-gradient(90deg, #ff6b6b, var(--perfil-rojo));
+  transition: width 0.4s ease;
+}
+
+/* ---------- Campos ---------- */
+.perfil-campos {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0.55rem;
+  padding: 0.4rem 1.1rem 1rem;
+}
+
+@media (max-width: 575.98px) {
+  .perfil-campos {
+    grid-template-columns: 1fr;
+  }
+}
+
+.perfil-campo {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  min-height: 58px;
+  padding: 0.5rem 0.7rem;
+  border-radius: 12px;
+  border: 1px solid rgba(255, 255, 255, 0.85);
+  background: rgba(255, 255, 255, 0.62);
+}
+
+.perfil-campo--error {
+  border-color: var(--perfil-rojo);
+}
+
+.perfil-campo__icono {
+  flex: none;
+  display: inline-flex;
+}
+
+.perfil-campo__cuerpo {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  line-height: 1.25;
+}
+
+.perfil-campo__etiqueta {
+  font-size: 0.78rem;
+  opacity: 0.8;
+}
+
+.perfil-campo__valor {
+  font-size: 0.92rem;
+  font-weight: 600;
+  overflow-wrap: break-word;
+}
+
+.perfil-campo__valor--vacio {
+  font-weight: 400;
+  opacity: 0.75;
+  white-space: nowrap;
+}
+
+.perfil-campo__error {
+  margin-top: 0.15rem;
+  font-size: 0.72rem;
+  color: var(--perfil-rojo-oscuro);
+}
+
+.perfil-control {
+  width: 100%;
+  margin-top: 0.1rem;
+  padding: 0.2rem 0.4rem;
+  font-size: 0.88rem;
+  color: var(--perfil-azul);
+  border-radius: 8px;
+  border: 1px solid rgba(43, 58, 103, 0.35);
+  background: rgba(255, 255, 255, 0.9);
+}
+
+.perfil-control:focus-visible {
+  outline: 2px solid var(--perfil-rojo);
+  outline-offset: 1px;
+}
+
+/* ---------- Botones pequeños dentro de los campos ---------- */
+.perfil-btn-agregar {
+  flex: none;
+  padding: 0.28rem 0.7rem;
+  font-size: 0.76rem;
+  font-weight: 600;
+  white-space: nowrap;
+  color: #fff;
+  border: 0;
+  border-radius: 999px;
+  background: var(--perfil-rojo);
+  box-shadow: 0 2px 5px rgba(201, 42, 45, 0.35);
+  transition: background 0.15s ease, transform 0.15s ease;
+}
+
+.perfil-btn-agregar:hover {
+  background: var(--perfil-rojo-oscuro);
+  transform: translateY(-1px);
+}
+
+.perfil-btn-icono {
+  flex: none;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 28px;
+  height: 28px;
+  padding: 0;
+  font-size: 0.8rem;
+  color: var(--perfil-azul);
+  border: 0;
+  border-radius: 50%;
+  background: rgba(43, 58, 103, 0.1);
+  transition: background 0.15s ease;
+}
+
+.perfil-btn-icono:hover {
+  background: rgba(43, 58, 103, 0.2);
+}
+
+.perfil-btn-agregar:focus-visible,
+.perfil-btn-icono:focus-visible,
+.perfil-btn-guardar:focus-visible,
+.perfil-btn-salir:focus-visible {
+  outline: 3px solid var(--perfil-azul);
+  outline-offset: 2px;
+}
+
+/* ---------- Mensajes ---------- */
+.perfil-mensaje {
+  margin: 0 1.1rem 0.9rem;
+  padding: 0.4rem 0.8rem;
+  font-size: 0.85rem;
+  text-align: center;
+  border-radius: 10px;
+}
+
+.perfil-mensaje--ok {
+  color: #14532d;
+  background: rgba(187, 247, 208, 0.85);
+}
+
+.perfil-mensaje--error {
+  color: #7f1d1d;
+  background: rgba(254, 202, 202, 0.9);
+}
+
+/* ---------- Acciones ---------- */
+.perfil-acciones {
+  display: flex;
+  justify-content: center;
+  flex-wrap: wrap;
+  gap: 0.9rem;
+  padding: 0.9rem 1.1rem 1.1rem;
+  background: rgba(43, 58, 103, 0.14);
+}
+
+.perfil-btn-guardar,
+.perfil-btn-salir {
+  padding: 0.5rem 1.5rem;
+  font-size: 0.92rem;
+  font-weight: 700;
+  border-radius: 999px;
+  transition: transform 0.15s ease, box-shadow 0.15s ease, background 0.15s ease;
+}
+
+.perfil-btn-guardar {
+  color: #3b2a00;
+  border: 2px solid var(--perfil-rojo);
+  background: #ffd84d;
+  box-shadow:
+    0 0 0 3px rgba(255, 216, 77, 0.45),
+    0 0 18px rgba(255, 200, 0, 0.55);
+}
+
+.perfil-btn-guardar:hover:not(:disabled) {
+  transform: translateY(-1px);
+  background: #ffe173;
+}
+
+.perfil-btn-guardar:disabled {
+  opacity: 0.6;
+  box-shadow: none;
+  cursor: not-allowed;
+}
+
+.perfil-btn-salir {
+  color: #fff;
+  border: 2px solid var(--perfil-rojo);
+  background: var(--perfil-rojo);
+  box-shadow: 0 3px 8px rgba(201, 42, 45, 0.35);
+}
+
+.perfil-btn-salir:hover {
+  transform: translateY(-1px);
+  background: var(--perfil-rojo-oscuro);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .perfil-btn-agregar,
+  .perfil-btn-guardar,
+  .perfil-btn-salir,
+  .perfil-barra__relleno {
+    transition: none;
+  }
+}

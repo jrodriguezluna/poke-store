@@ -1,6 +1,7 @@
 import { render, screen, fireEvent, waitFor } from '@testing-library/react';
 import { MemoryRouter } from 'react-router-dom';
 import { PRODUCTOS_MOCK } from '../data/productos';
+import { ProductosProvider } from '../context/ProductosContext';
 import Catalogo from './Catalogo';
 
 describe('Catalogo Component', () => {
@@ -20,7 +21,9 @@ describe('Catalogo Component', () => {
   it('renderiza los productos recibidos desde la API', async () => {
     render(
       <MemoryRouter>
-        <Catalogo />
+        <ProductosProvider>
+          <Catalogo />
+        </ProductosProvider>
       </MemoryRouter>
     );
 
@@ -39,7 +42,9 @@ describe('Catalogo Component', () => {
   it('filtra los productos por nombre al escribir en el campo de búsqueda', async () => {
     render(
       <MemoryRouter>
-        <Catalogo />
+        <ProductosProvider>
+          <Catalogo />
+        </ProductosProvider>
       </MemoryRouter>
     );
 
@@ -57,7 +62,9 @@ describe('Catalogo Component', () => {
   it('filtra productos por categoría', async () => {
     render(
       <MemoryRouter>
-        <Catalogo />
+        <ProductosProvider>
+          <Catalogo />
+        </ProductosProvider>
       </MemoryRouter>
     );
 

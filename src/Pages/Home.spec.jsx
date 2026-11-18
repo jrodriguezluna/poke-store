@@ -1,6 +1,7 @@
 import { render, screen, waitFor } from '@testing-library/react';
 import { MemoryRouter } from 'react-router-dom';
 import { PRODUCTOS_MOCK } from '../data/productos';
+import { ProductosProvider } from '../context/ProductosContext';
 import Home from './Home';
 
 describe('Vista Home', () => {
@@ -17,7 +18,9 @@ describe('Vista Home', () => {
     console.log('[LOG][Home] Inicio: render hero y catálogo');
     render(
       <MemoryRouter>
-        <Home />
+        <ProductosProvider>
+          <Home />
+        </ProductosProvider>
       </MemoryRouter>
     );
 
