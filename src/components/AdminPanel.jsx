@@ -4,10 +4,12 @@ import Offcanvas from 'react-bootstrap/Offcanvas';
 import { useAuth } from '../context/AuthContext';
 import PanelProductos from './admin/PanelProductos';
 import PanelUsuarios from './admin/PanelUsuarios';
+import PanelBlogs from './admin/PanelBlogs';
 
 const SECCIONES = [
   { id: 'productos', etiqueta: 'Productos' },
   { id: 'usuarios', etiqueta: 'Usuarios' },
+  { id: 'blogs', etiqueta: 'Blogs' },
 ];
 
 // Botón ☰ + panel lateral de administración.
@@ -64,7 +66,13 @@ export default function AdminPanel() {
             ))}
           </div>
 
-          {seccion === 'productos' ? <PanelProductos /> : <PanelUsuarios />}
+          {seccion === 'productos' ? (
+            <PanelProductos />
+          ) : seccion === 'usuarios' ? (
+            <PanelUsuarios />
+          ) : (
+            <PanelBlogs />
+          )}
         </Offcanvas.Body>
       </Offcanvas>
     </>

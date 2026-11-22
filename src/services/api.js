@@ -40,6 +40,20 @@ export const eliminarUsuario = (id) =>
 export const loginGoogle = (credential) =>
   request("/api/auth/google", { method: "POST", body: JSON.stringify({ credential }) });
 
+// ---------- Blogs ----------
+export const listarBlogs = () => request("/api/blogs");
+
+export const obtenerBlog = (id) => request(`/api/blogs/${id}`);
+
+export const crearBlog = (datos) =>
+  request("/api/blogs", { method: "POST", body: JSON.stringify(datos) });
+
+export const actualizarBlog = (id, datos) =>
+  request(`/api/blogs/${id}`, { method: "PUT", body: JSON.stringify(datos) });
+
+export const eliminarBlog = (id) =>
+  request(`/api/blogs/${id}`, { method: "DELETE" });
+
 // ---------- Productos ----------
 export const getProductos = () => request("/api/productos");
 

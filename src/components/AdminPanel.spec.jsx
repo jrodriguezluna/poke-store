@@ -22,11 +22,26 @@ const renderConRol = (rol) => {
 
 describe('Panel lateral de administración', () => {
   beforeEach(() => {
-    spyOn(window, 'fetch').and.callFake((url) =>
-      respuesta(String(url).includes('/api/usuarios')
-        ? [{ id: 7, nombre: 'Brock', email: 'brock@pokestore.cl', rol: 'cliente' }]
-        : [{ id: 1, nombre: 'Pikachu Peluche', categoria: 'Peluches', precio: 15000, stock: 5 }])
-    );
+    spyOn(window, 'fetch').and.callFake((url) => {
+      if (String(url).includes('/api/usuarios')) {
+        return respuesta([{ id: 7, nombre: 'Brock', email: 'brock@pokestore.cl', rol: 'cliente' }]);
+      }
+      if (String(url).includes('/api/blogs')) {
+        return respuesta([{
+          id: 3,
+          etiqueta: 'Guía',
+          titulo: 'Cuidar una colección',
+          resumen: 'Resumen',
+          autor: 'Entrenador',
+          imagen: null,
+          textoAlternativo: null,
+          introduccion: 'Introducción',
+          secciones: [{ id: 1, orden: 0, titulo: 'Guardar', texto: 'Texto' }],
+          consejo: null,
+        }]);
+      }
+      return respuesta([{ id: 1, nombre: 'Pikachu Peluche', categoria: 'Peluches', precio: 15000, stock: 5 }]);
+    });
   });
 
   afterEach(() => localStorage.clear());
@@ -47,7 +62,7 @@ describe('Panel lateral de administración', () => {
     console.log('[LOG][AdminPanel] OK: oculto');
   });
 
-  it('muestra el botón ☰ al admin y abre el panel con Productos y Usuarios', async () => {
+  it('muestra el botón ☰ al admin y permite abrir las secciones del panel', async () => {
     console.log('[LOG][AdminPanel] Inicio: admin abre el panel');
     renderConRol('admin');
 
@@ -59,6 +74,9 @@ describe('Panel lateral de administración', () => {
 
     fireEvent.click(screen.getByRole('tab', { name: 'Usuarios' }));
     expect(await screen.findByText('brock@pokestore.cl')).toBeTruthy();
+
+    fireEvent.click(screen.getByRole('tab', { name: 'Blogs' }));
+    expect(await screen.findByText('Cuidar una colección')).toBeTruthy();
     console.log('[LOG][AdminPanel] OK: panel con ambas secciones');
   });
 });
