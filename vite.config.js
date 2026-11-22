@@ -10,7 +10,7 @@ export default defineConfig({
   ],
   server: {
     proxy: {
-      // Redirige /api y /uploads al backend FastAPI en desarrollo
+      // Redirige /api y /uploads al backend REST en desarrollo
       '/api': 'http://localhost:8000',
       '/uploads': 'http://localhost:8000',
     },

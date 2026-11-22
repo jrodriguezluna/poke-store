@@ -73,7 +73,7 @@ module.exports = function (config) {
         flags: ['-headless'],
       },
     },
-    browsers: ['FirefoxHeadlessCustom'],
+    browsers: ['ChromeHeadlessNoSandbox'],
     singleRun: false,
   });
 };
