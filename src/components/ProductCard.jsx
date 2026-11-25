@@ -1,4 +1,5 @@
 import { Link } from 'react-router-dom';
+import { esStockBajo } from '../utils/stock';
 
 export default function ProductCard({ producto, nombre, precio, imagen, categoria, id, onAdd }) {
   // Soporta recibir el objeto producto completo o props individuales
@@ -7,6 +8,8 @@ export default function ProductCard({ producto, nombre, precio, imagen, categori
   const itemImagen = producto?.imagen || imagen || 'https://via.placeholder.com/150';
   const itemCategoria = producto?.categoria || categoria;
   const itemId = producto?.id || id;
+  const stockAgotado = producto?.stock === 0;
+  const stockBajo = esStockBajo(producto?.stock);
 
   const precioFormateado = new Intl.NumberFormat('es-CL', {
     style: 'currency',
@@ -26,6 +29,16 @@ export default function ProductCard({ producto, nombre, precio, imagen, categori
       <div className="card-body d-flex flex-column">
         {itemCategoria && (
           <span className="badge bg-secondary mb-2 align-self-start">{itemCategoria}</span>
+        )}
+        {stockAgotado && (
+          <span className="badge bg-danger mb-2 align-self-start" role="status">
+            Agotado
+          </span>
+        )}
+        {!stockAgotado && stockBajo && (
+          <span className="badge bg-warning text-dark mb-2 align-self-start" role="status">
+            ¡Pocas unidades!
+          </span>
         )}
         <h5 className="card-title h6 fw-bold">{itemNombre}</h5>
         <p className="card-text fw-semibold text-danger fs-5 mt-auto mb-3">

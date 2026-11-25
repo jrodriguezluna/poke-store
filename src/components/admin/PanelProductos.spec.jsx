@@ -40,6 +40,7 @@ describe('Panel de productos (admin)', () => {
 
     expect(await screen.findByText('Pikachu Peluche')).toBeTruthy();
     expect(screen.getByText('Charmander Figura')).toBeTruthy();
+    expect(screen.getAllByText('Stock bajo').length).toBeGreaterThan(0);
     console.log('[LOG][PanelProductos] OK: productos en lista');
   });
 

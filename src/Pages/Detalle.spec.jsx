@@ -42,5 +42,48 @@ describe('Detalle Component', () => {
     expect(carritoGuardado[0].id).toBe(1);
     expect(carritoGuardado[0].cantidad).toBe(2);
   });
+
+  it('destaca el poco stock en el detalle del producto', async () => {
+    spyOn(window, 'fetch').and.returnValue(
+      Promise.resolve({
+        ok: true,
+        json: () => Promise.resolve([
+          { id: 1, nombre: 'Peluche Pikachu 30cm', precio: 15990, stock: 5 },
+        ]),
+      })
+    );
+
+    render(
+      <MemoryRouter initialEntries={['/producto/1']}>
+        <Routes>
+          <Route path="/producto/:id" element={<ProductosProvider><Detalle /></ProductosProvider>} />
+        </Routes>
+      </MemoryRouter>
+    );
+
+    expect(await screen.findByText('¡Pocas unidades! · En Stock: 5 unidades')).toBeTruthy();
+  });
+
+  it('impide añadir al carrito un producto agotado', async () => {
+    spyOn(window, 'fetch').and.returnValue(
+      Promise.resolve({
+        ok: true,
+        json: () => Promise.resolve([
+          { id: 1, nombre: 'Peluche Pikachu 30cm', precio: 15990, stock: 0 },
+        ]),
+      })
+    );
+
+    render(
+      <MemoryRouter initialEntries={['/producto/1']}>
+        <Routes>
+          <Route path="/producto/:id" element={<ProductosProvider><Detalle /></ProductosProvider>} />
+        </Routes>
+      </MemoryRouter>
+    );
+
+    expect((await screen.findByRole('button', { name: 'Agotado' })).disabled).toBe(true);
+    expect(screen.getAllByText('Agotado').length).toBe(2);
+  });
 });
 

@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import Alert from 'react-bootstrap/Alert';
+import Badge from 'react-bootstrap/Badge';
 import Button from 'react-bootstrap/Button';
 import Col from 'react-bootstrap/Col';
 import Form from 'react-bootstrap/Form';
@@ -8,6 +9,7 @@ import Modal from 'react-bootstrap/Modal';
 import Row from 'react-bootstrap/Row';
 import { useProductos } from '../../context/ProductosContext';
 import { crearProducto, actualizarProducto, eliminarProducto } from '../../services/api';
+import { esStockBajo } from '../../utils/stock';
 
 const VACIO = { nombre: '', categoria: '', precio: 0, stock: 0, imagen: '', descripcion: '' };
 
@@ -112,6 +114,10 @@ export default function PanelProductos() {
                 <div className="fw-semibold text-truncate">{p.nombre}</div>
                 <div className="small text-secondary">
                   {p.categoria || 'Sin categoría'} · ${Number(p.precio ?? 0).toLocaleString('es-CL')} · Stock {p.stock}
+                  {p.stock === 0 && <Badge bg="danger" className="ms-2">Agotado</Badge>}
+                  {p.stock !== 0 && esStockBajo(p.stock) && (
+                    <Badge bg="warning" text="dark" className="ms-2">Stock bajo</Badge>
+                  )}
                 </div>
                 <div className="d-flex gap-2 mt-2">
                   <Button

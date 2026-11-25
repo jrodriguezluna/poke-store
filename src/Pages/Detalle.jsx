@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import { useParams, Link } from 'react-router-dom';
 import { useProductos } from '../context/ProductosContext';
 import { agregarProductoCarrito } from '../utils/carrito';
+import { esStockBajo } from '../utils/stock';
 
 export default function Detalle() {
   const { id } = useParams();
@@ -47,6 +48,18 @@ export default function Detalle() {
     style: 'currency',
     currency: 'CLP',
   }).format(producto.precio);
+  const stockAgotado = producto.stock === 0;
+  const stockBajo = esStockBajo(producto.stock);
+  const claseEstadoStock = stockAgotado
+    ? 'bg-danger'
+    : stockBajo
+    ? 'bg-warning text-dark'
+    : 'bg-success-subtle text-success border border-success';
+  const textoEstadoStock = stockAgotado
+    ? 'Agotado'
+    : stockBajo
+    ? `¡Pocas unidades! · En Stock: ${producto.stock} unidades`
+    : `En Stock: ${producto.stock} unidades`;
 
   const handleSumar = () => {
     if (cantidad < producto.stock) {
@@ -61,6 +74,7 @@ export default function Detalle() {
   };
 
   const handleAgregarAlCarrito = () => {
+    if (producto.stock === 0) return;
     agregarProductoCarrito(producto, cantidad);
     setAlertaAgregado(true);
     setTimeout(() => {
@@ -119,10 +133,11 @@ export default function Detalle() {
                 {precioFormateado}
               </span>
               <span
-                className="badge bg-success-subtle text-success border border-success px-2 py-1"
+                className={`badge px-2 py-1 ${claseEstadoStock}`}
                 id="detalle-stock"
+                role="status"
               >
-                En Stock: {producto.stock} unidades
+                {textoEstadoStock}
               </span>
             </div>
 
@@ -177,8 +192,9 @@ export default function Detalle() {
               className="btn btn-primary btn-lg w-100 py-3 fw-bold d-flex align-items-center justify-content-center gap-2 shadow-sm"
               id="btn-agregar-carrito"
               onClick={handleAgregarAlCarrito}
+              disabled={stockAgotado}
             >
-              Añadir al carrito
+              {stockAgotado ? 'Agotado' : 'Añadir al carrito'}
             </button>
 
             {/* Alerta dinámica de confirmación */}

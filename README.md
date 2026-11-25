@@ -1,36 +1,64 @@
-# React + Vite
+# PokéStore Frontend
 
-This template provides a minimal setup to get React working in Vite with HMR and some Oxlint rules.
+Aplicación React con Vite. En desarrollo consume la API Spring Boot en `http://localhost:8000`.
 
-Currently, two official plugins are available:
+## Requisitos
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Oxc](https://oxc.rs)
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/)
+- Node.js `20.19+` o `22.12+`.
+- npm (incluido con Node.js).
+- Backend PokéStore iniciado y accesible en `http://localhost:8000`.
 
-## React Compiler
+## Instalar dependencias
 
-The React Compiler is enabled on this template. See [this documentation](https://react.dev/learn/react-compiler) for more information.
+Ejecuta desde la raíz de este repositorio. `npm ci` instala las versiones del `package-lock.json`.
 
-Note: This will impact Vite dev & build performances.
-You can also try [the experimental native React Compiler support in plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react/README.md#rust-react-compiler) by using `compiler: true` in the plugin options instead of using the Babel plugin.
+### Linux
 
-## Local API and Google sign-in
+```bash
+npm ci
+cp .env.example .env.local
+```
 
-Create `.env.local` from `.env.example` if it does not exist yet, and set `VITE_GOOGLE_CLIENT_ID` to a Google OAuth 2.0 web client ID. Configure `http://localhost:5173` as an authorized JavaScript origin in Google Cloud. Put the same client ID in `GOOGLE_CLIENT_ID` in the backend `.env`, then restart both development servers. Google sign-in is hidden until the frontend client ID is configured.
+### Windows (PowerShell)
+
+```powershell
+npm ci
+Copy-Item .env.example .env.local
+```
+
+No es obligatorio crear `.env.local` para el uso local predeterminado. Si necesitas cambiar la URL de la API o habilitar Google Sign-In, edítalo:
+
+```env
+VITE_API_URL=http://localhost:8000
+VITE_GOOGLE_CLIENT_ID=
+```
+
+Para Google Sign-In, configura un OAuth Client ID tipo aplicación web, agrega `http://localhost:5173` como origen autorizado y usa el mismo Client ID en `VITE_GOOGLE_CLIENT_ID` del frontend y `GOOGLE_CLIENT_ID` del backend. Reinicia ambos servidores después de cambiarlo.
+
+## Ejecutar en desarrollo
+
+### Linux
 
 ```bash
 npm run dev
 ```
 
-Frontend `.env.local`:
+### Windows (PowerShell o CMD)
 
-```env
-VITE_API_URL=http://localhost:8000
-VITE_GOOGLE_CLIENT_ID=your-client-id.apps.googleusercontent.com
+```powershell
+npm run dev
 ```
 
-The backend accepts Google sign-in only for verified accounts from its allowed email domains; see the backend `UsuarioService` for the current domain policy.
+Abre <http://localhost:5173>. Detén Vite con `Ctrl+C`.
 
-## Expanding the Oxlint configuration
+## Ejecutar backend y frontend
 
-If you are developing a production application, we recommend using TypeScript with type-aware lint rules enabled. Check out the [TS template](https://github.com/vitejs/vite/tree/main/packages/create-vite/template-react-ts) for information on how to integrate TypeScript and Oxlint's TypeScript related rules in your project.
+Primero inicia el backend Spring Boot y MySQL según las instrucciones de [PokéStore Backend Spring Boot](https://github.com/jrodriguezluna/poke-store-backend-sb#readme). En Windows, ejecuta cada servidor en una terminal distinta. En Linux, el README del backend incluye `dev.sh` para iniciar ambos repositorios juntos.
+
+## Otros comandos
+
+```bash
+npm run build
+npm run lint
+npm run test:coverage
+```
