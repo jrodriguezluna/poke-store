@@ -36,6 +36,7 @@ describe('Catalogo Component', () => {
       .toBe(PRODUCTOS_MOCK.length);
     PRODUCTOS_MOCK.forEach((producto) => {
       expect(screen.getByText(producto.nombre)).toBeTruthy();
+      expect(screen.getByText(`Stock: ${producto.stock} unidades`)).toBeTruthy();
     });
   });
 

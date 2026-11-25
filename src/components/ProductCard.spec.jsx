@@ -7,6 +7,11 @@ describe('ProductCard', () => {
     expect(screen.getByText('Polera')).toBeTruthy();
   });
 
+  it('muestra el stock actual del producto', () => {
+    render(<ProductCard producto={{ nombre: 'Polera', stock: 12 }} />);
+    expect(screen.getByText('Stock: 12 unidades')).toBeTruthy();
+  });
+
   it('llama a onAdd al hacer clic en Agregar', () => {
     const onAdd = jasmine.createSpy('onAdd');
     render(<ProductCard nombre="Polera" precio={9990} onAdd={onAdd} />);
@@ -27,5 +32,6 @@ describe('ProductCard', () => {
   it('muestra agotado cuando no quedan unidades', () => {
     render(<ProductCard producto={{ nombre: 'Polera', stock: 0 }} />);
     expect(screen.getByRole('status').textContent).toBe('Agotado');
+    expect(screen.getByText('Stock: 0 unidades')).toBeTruthy();
   });
 });
