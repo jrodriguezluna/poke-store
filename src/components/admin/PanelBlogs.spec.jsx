@@ -37,11 +37,29 @@ describe('Panel de blogs (admin)', () => {
 
     expect(await screen.findByText('Cómo cuidar las cartas')).toBeTruthy();
     expect(screen.getByText('Guía · Entrenador Sol')).toBeTruthy();
+    expect(screen.queryByRole('heading', { name: 'Blogs' })).toBeNull();
+    expect(screen.queryByRole('combobox')).toBeNull();
+  });
+
+  it('busca artículos por título, etiqueta o autor', async () => {
+    render(<PanelBlogs />);
+    await screen.findByText('Cómo cuidar las cartas');
+
+    fireEvent.change(screen.getByRole('searchbox', { name: 'Buscar blogs' }), {
+      target: { value: 'Entrenador Sol' },
+    });
+    expect(screen.getByText('Cómo cuidar las cartas')).toBeTruthy();
+
+    fireEvent.change(screen.getByRole('searchbox', { name: 'Buscar blogs' }), {
+      target: { value: 'pikachu' },
+    });
+    expect(screen.getByText('No se encontraron artículos.')).toBeTruthy();
   });
 
   it('muestra el editor ancho y con scroll independiente del encabezado y pie', async () => {
     render(<PanelBlogs />);
     await screen.findByText('Cómo cuidar las cartas');
+    expect(screen.getByRole('button', { name: /agregar blog/i }).classList.contains('btn-success')).toBeTrue();
     fireEvent.click(screen.getByRole('button', { name: /agregar blog/i }));
 
     const dialog = await screen.findByRole('dialog');

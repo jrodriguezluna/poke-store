@@ -1,11 +1,13 @@
 import { useState, useEffect } from 'react';
 import { useParams, Link } from 'react-router-dom';
 import { useProductos } from '../context/ProductosContext';
+import { useAuth } from '../context/AuthContext';
 import { agregarProductoCarrito } from '../utils/carrito';
 import { esStockBajo } from '../utils/stock';
 
 export default function Detalle() {
   const { id } = useParams();
+  const { esVendedor } = useAuth();
   const [cantidad, setCantidad] = useState(1);
   const [alertaAgregado, setAlertaAgregado] = useState(false);
 
@@ -87,9 +89,11 @@ export default function Detalle() {
       {/* Breadcrumb dinámico */}
       <nav aria-label="breadcrumb" className="mb-4">
         <ol className="breadcrumb" id="breadcrumb-contenedor">
-          <li className="breadcrumb-item">
-            <Link to="/">Inicio</Link>
-          </li>
+          {!esVendedor && (
+            <li className="breadcrumb-item">
+              <Link to="/">Inicio</Link>
+            </li>
+          )}
           <li className="breadcrumb-item">
             <Link to="/catalogo">Productos</Link>
           </li>
@@ -151,54 +155,58 @@ export default function Detalle() {
             <hr className="my-4" />
 
             {/* Selector de Cantidad y Botón Añadir al Carrito */}
-            <div className="row g-3 align-items-center mb-3">
-              <div className="col-auto">
-                <label htmlFor="detalle-cantidad" className="fw-bold me-2">
-                  Cantidad:
-                </label>
-              </div>
-              <div className="col-auto">
-                <div className="input-group" style={{ width: '140px' }}>
-                  <button
-                    className="btn btn-outline-secondary"
-                    type="button"
-                    id="btn-restar-cant"
-                    onClick={handleRestar}
-                    disabled={cantidad <= 1}
-                  >
-                    -
-                  </button>
-                  <input
-                    type="number"
-                    id="detalle-cantidad"
-                    className="form-control text-center fw-bold"
-                    value={cantidad}
-                    readOnly
-                  />
-                  <button
-                    className="btn btn-outline-secondary"
-                    type="button"
-                    id="btn-sumar-cant"
-                    onClick={handleSumar}
-                    disabled={cantidad >= producto.stock}
-                  >
-                    +
-                  </button>
+            {!esVendedor && (
+              <div className="row g-3 align-items-center mb-3">
+                <div className="col-auto">
+                  <label htmlFor="detalle-cantidad" className="fw-bold me-2">
+                    Cantidad:
+                  </label>
+                </div>
+                <div className="col-auto">
+                  <div className="input-group" style={{ width: '140px' }}>
+                    <button
+                      className="btn btn-outline-secondary"
+                      type="button"
+                      id="btn-restar-cant"
+                      onClick={handleRestar}
+                      disabled={cantidad <= 1}
+                    >
+                      -
+                    </button>
+                    <input
+                      type="number"
+                      id="detalle-cantidad"
+                      className="form-control text-center fw-bold"
+                      value={cantidad}
+                      readOnly
+                    />
+                    <button
+                      className="btn btn-outline-secondary"
+                      type="button"
+                      id="btn-sumar-cant"
+                      onClick={handleSumar}
+                      disabled={cantidad >= producto.stock}
+                    >
+                      +
+                    </button>
+                  </div>
                 </div>
               </div>
-            </div>
+            )}
 
-            <button
-              className="btn btn-primary btn-lg w-100 py-3 fw-bold d-flex align-items-center justify-content-center gap-2 shadow-sm"
-              id="btn-agregar-carrito"
-              onClick={handleAgregarAlCarrito}
-              disabled={stockAgotado}
-            >
-              {stockAgotado ? 'Agotado' : 'Añadir al carrito'}
-            </button>
+            {!esVendedor && (
+              <button
+                className="btn btn-primary btn-lg w-100 py-3 fw-bold d-flex align-items-center justify-content-center gap-2 shadow-sm"
+                id="btn-agregar-carrito"
+                onClick={handleAgregarAlCarrito}
+                disabled={stockAgotado}
+              >
+                {stockAgotado ? 'Agotado' : 'Añadir al carrito'}
+              </button>
+            )}
 
             {/* Alerta dinámica de confirmación */}
-            {alertaAgregado && (
+            {!esVendedor && alertaAgregado && (
               <div
                 id="alerta-agregado"
                 className="alert alert-success mt-3 text-center"

@@ -69,7 +69,10 @@ export const eliminarProducto = (id) =>
   request(`/api/productos/${id}`, { method: "DELETE" });
 
 // ---------- Pedidos ----------
-export const getPedidos = (usuarioId) => request(`/api/pedidos?usuarioId=${usuarioId}`);
+export const getPedidos = (usuarioId) =>
+  request(`/api/pedidos${usuarioId == null ? '' : `?usuarioId=${usuarioId}`}`);
+
+export const getPedido = (id) => request(`/api/pedidos/${id}`);
 
 export const crearPedido = (datos) =>
   request("/api/pedidos", { method: "POST", body: JSON.stringify(datos) });

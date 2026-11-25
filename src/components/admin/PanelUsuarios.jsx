@@ -7,8 +7,11 @@ import Form from 'react-bootstrap/Form';
 import ListGroup from 'react-bootstrap/ListGroup';
 import Modal from 'react-bootstrap/Modal';
 import Row from 'react-bootstrap/Row';
+import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../../context/AuthContext';
 import { listarUsuarios, modificarUsuario, eliminarUsuario } from '../../services/api';
+import AdminListFilters from './AdminListFilters';
+import AdminPanelTabs from './AdminPanelTabs';
 
 const CAMPOS = [
   { name: 'nombre', label: 'Nombre' },
@@ -19,8 +22,12 @@ const CAMPOS = [
   { name: 'comuna', label: 'Comuna' },
 ];
 
-export default function PanelUsuarios() {
-  const { user, guardarSesion } = useAuth();
+export default function PanelUsuarios({
+  seccionActiva = 'usuarios',
+  onCambiarSeccion = () => {},
+}) {
+  const { user, guardarSesion, logout } = useAuth();
+  const navigate = useNavigate();
   const [usuarios, setUsuarios] = useState([]);
   const [mostrar, setMostrar] = useState(false); // ventana flotante abierta
   const [datos, setDatos] = useState({}); // usuario que se está editando
@@ -28,6 +35,18 @@ export default function PanelUsuarios() {
   const [error, setError] = useState(''); // error de carga / eliminación
   const [errorModal, setErrorModal] = useState(''); // error dentro de la ventana
   const [aviso, setAviso] = useState('');
+  const [busqueda, setBusqueda] = useState('');
+  const [rolSeleccionado, setRolSeleccionado] = useState('');
+
+  const roles = [...new Set([
+    ...usuarios.map((usuario) => usuario.rol),
+    rolSeleccionado,
+  ].filter(Boolean))];
+  const consulta = busqueda.trim().toLocaleLowerCase();
+  const usuariosFiltrados = usuarios.filter((usuario) =>
+    (!consulta || `${usuario.nombre ?? ''} ${usuario.email ?? ''}`.toLocaleLowerCase().includes(consulta))
+    && (!rolSeleccionado || usuario.rol === rolSeleccionado)
+  );
 
   const cargar = () =>
     listarUsuarios()
@@ -60,6 +79,11 @@ export default function PanelUsuarios() {
         telefono: datos.telefono || null,
         password: datos.password || null,
       });
+      if (datos.id === user?.id && datos.rol !== user?.rol) {
+        logout();
+        navigate('/login');
+        return;
+      }
       // Si el admin se editó a sí mismo, refrescamos su sesión para que
       // Perfil (y el panel, si se quitó el rol admin) reflejen el cambio.
       if (datos.id === user?.id) {
@@ -68,7 +92,7 @@ export default function PanelUsuarios() {
       }
       await cargar();
       setError('');
-      setAviso(`«${datos.nombre}» actualizado.`);
+      setAviso(`«${datos.nombre}» actualizado. Si cambió el rol, debe iniciar sesión nuevamente para aplicarlo.`);
       cerrar();
     } catch (err) {
       setErrorModal(err.message);
@@ -91,7 +115,18 @@ export default function PanelUsuarios() {
 
   return (
     <>
-      <h2 className="h5 mb-3">Usuarios</h2>
+      <AdminPanelTabs activa={seccionActiva} onChange={onCambiarSeccion} />
+      <AdminListFilters
+        search={busqueda}
+        onSearchChange={setBusqueda}
+        searchLabel="Buscar usuarios"
+        searchPlaceholder="Buscar usuarios"
+        filterLabel="Filtrar usuarios por rol"
+        filterValue={rolSeleccionado}
+        onFilterChange={setRolSeleccionado}
+        filterOptions={roles}
+        filterAllLabel="Todos los roles"
+      />
 
       {error && <Alert variant="danger">{error}</Alert>}
       {aviso && (
@@ -101,14 +136,16 @@ export default function PanelUsuarios() {
       )}
 
       <ListGroup variant="flush">
-        {usuarios.map((u) => (
+        {usuariosFiltrados.map((u) => (
           <ListGroup.Item key={u.id} className="px-0">
             <div className="d-flex justify-content-between align-items-start gap-2">
               <div style={{ minWidth: 0 }}>
                 <div className="fw-semibold text-truncate">{u.nombre}</div>
                 <div className="small text-secondary text-truncate">{u.email}</div>
               </div>
-              <Badge bg={u.rol === 'admin' ? 'danger' : 'secondary'}>{u.rol}</Badge>
+              <Badge bg={u.rol === 'admin' ? 'danger' : u.rol === 'vendedor' ? 'primary' : 'secondary'}>
+                {u.rol}
+              </Badge>
             </div>
             <div className="d-flex gap-2 mt-2">
               <Button
@@ -130,6 +167,9 @@ export default function PanelUsuarios() {
             </div>
           </ListGroup.Item>
         ))}
+        {usuariosFiltrados.length === 0 && (
+          <div className="small text-secondary py-3">No se encontraron usuarios.</div>
+        )}
       </ListGroup>
 
       {/* Ventana flotante para editar */}
@@ -163,6 +203,7 @@ export default function PanelUsuarios() {
                   <Form.Label>Rol</Form.Label>
                   <Form.Select name="rol" value={datos.rol ?? 'cliente'} onChange={onChange}>
                     <option value="cliente">cliente</option>
+                    <option value="vendedor">vendedor</option>
                     <option value="admin">admin</option>
                   </Form.Select>
                 </Form.Group>

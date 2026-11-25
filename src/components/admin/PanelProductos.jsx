@@ -7,13 +7,18 @@ import Form from 'react-bootstrap/Form';
 import ListGroup from 'react-bootstrap/ListGroup';
 import Modal from 'react-bootstrap/Modal';
 import Row from 'react-bootstrap/Row';
+import AdminListFilters from './AdminListFilters';
+import AdminPanelTabs from './AdminPanelTabs';
 import { useProductos } from '../../context/ProductosContext';
 import { crearProducto, actualizarProducto, eliminarProducto } from '../../services/api';
 import { esStockBajo } from '../../utils/stock';
 
 const VACIO = { nombre: '', categoria: '', precio: 0, stock: 0, imagen: '', descripcion: '' };
 
-export default function PanelProductos() {
+export default function PanelProductos({
+  seccionActiva = 'productos',
+  onCambiarSeccion = () => {},
+}) {
   const { productos, error: errorCarga, recargar } = useProductos();
 
   const [mostrar, setMostrar] = useState(false); // ventana flotante abierta
@@ -22,9 +27,19 @@ export default function PanelProductos() {
   const [errorModal, setErrorModal] = useState(''); // error dentro de la ventana
   const [errorLista, setErrorLista] = useState(''); // error al eliminar
   const [aviso, setAviso] = useState(''); // confirmación de lo último que se hizo
+  const [busqueda, setBusqueda] = useState('');
+  const [categoriaSeleccionada, setCategoriaSeleccionada] = useState('');
 
   // Sugerencias para "Categoría": las que ya existen en los productos
-  const categorias = [...new Set(productos.map((p) => p.categoria).filter(Boolean))];
+  const categorias = [...new Set([
+    ...productos.map((p) => p.categoria),
+    categoriaSeleccionada,
+  ].filter(Boolean))];
+  const consulta = busqueda.trim().toLocaleLowerCase();
+  const productosFiltrados = productos.filter((producto) =>
+    (!consulta || `${producto.nombre ?? ''} ${producto.categoria ?? ''}`.toLocaleLowerCase().includes(consulta))
+    && (!categoriaSeleccionada || producto.categoria === categoriaSeleccionada)
+  );
 
   const abrir = (producto) => {
     setErrorModal('');
@@ -78,12 +93,22 @@ export default function PanelProductos() {
 
   return (
     <>
-      <div className="d-flex justify-content-between align-items-center mb-3">
-        <h2 className="h5 mb-0">Productos</h2>
-        <Button variant="danger" size="sm" onClick={() => abrir({ ...VACIO })}>
+      <AdminPanelTabs activa={seccionActiva} onChange={onCambiarSeccion}>
+        <Button variant="success" size="sm" onClick={() => abrir({ ...VACIO })}>
           Agregar producto
         </Button>
-      </div>
+      </AdminPanelTabs>
+      <AdminListFilters
+        search={busqueda}
+        onSearchChange={setBusqueda}
+        searchLabel="Buscar productos"
+        searchPlaceholder="Buscar productos"
+        filterLabel="Filtrar productos por categoría"
+        filterValue={categoriaSeleccionada}
+        onFilterChange={setCategoriaSeleccionada}
+        filterOptions={categorias}
+        filterAllLabel="Todas las categorías"
+      />
 
       {errorCarga && <Alert variant="danger">{errorCarga}</Alert>}
       {errorLista && <Alert variant="danger">{errorLista}</Alert>}
@@ -97,7 +122,7 @@ export default function PanelProductos() {
           no se ofrecen para editar porque los cambios no se podrían guardar. */}
       {!errorCarga && (
         <ListGroup variant="flush">
-          {productos.map((p) => (
+          {productosFiltrados.map((p) => (
             <ListGroup.Item key={p.id} className="d-flex gap-3 px-0">
               {p.imagen ? (
                 <img
@@ -140,6 +165,9 @@ export default function PanelProductos() {
               </div>
             </ListGroup.Item>
           ))}
+          {productosFiltrados.length === 0 && (
+            <div className="small text-secondary py-3">No se encontraron productos.</div>
+          )}
         </ListGroup>
       )}
 

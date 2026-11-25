@@ -55,6 +55,8 @@ Abre <http://localhost:5173>. Detén Vite con `Ctrl+C`.
 
 Primero inicia el backend Spring Boot y MySQL según las instrucciones de [PokéStore Backend Spring Boot](https://github.com/jrodriguezluna/poke-store-backend-sb#readme). En Windows, ejecuta cada servidor en una terminal distinta. En Linux, el README del backend incluye `dev.sh` para iniciar ambos repositorios juntos.
 
+Los vendedores acceden solo al catálogo y a la vista de órdenes (lista y detalle); no ven carrito, perfil ni herramientas administrativas. Un administrador asigna el rol desde el panel de usuarios. Tras cambiar un rol, la cuenta debe iniciar sesión de nuevo para cargar los permisos correspondientes.
+
 ## Otros comandos
 
 ```bash

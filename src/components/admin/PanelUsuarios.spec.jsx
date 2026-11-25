@@ -1,4 +1,5 @@
 import { render, screen, fireEvent, waitFor } from '@testing-library/react';
+import { MemoryRouter } from 'react-router-dom';
 import { AuthProvider } from '../../context/AuthContext';
 import PanelUsuarios from './PanelUsuarios';
 
@@ -16,6 +17,8 @@ const usuarios = [
     telefono: null, direccion: 'Calle Falsa 123', region: 'Maule', comuna: 'Talca' },
   { id: 2, nombre: 'Misty', email: 'misty@pokestore.cl', rol: 'cliente',
     telefono: '+56 9 1234 5678', direccion: 'Av. Agua 45', region: 'Biobío', comuna: 'Concepción' },
+  { id: 3, nombre: 'Brock', email: 'brock@pokestore.cl', rol: 'vendedor',
+    telefono: null, direccion: 'Calle Roca 1', region: 'Maule', comuna: 'Talca' },
 ];
 
 const respuesta = (data, ok = true) =>
@@ -43,9 +46,11 @@ const renderizar = () => {
     clave === 'poke_sesion' ? JSON.stringify(admin) : null
   );
   return render(
-    <AuthProvider>
-      <PanelUsuarios />
-    </AuthProvider>
+    <MemoryRouter>
+      <AuthProvider>
+        <PanelUsuarios />
+      </AuthProvider>
+    </MemoryRouter>
   );
 };
 
@@ -57,7 +62,29 @@ describe('Panel de usuarios (admin)', () => {
 
     expect(await screen.findByText('Ash Ketchum')).toBeTruthy();
     expect(screen.getByText('misty@pokestore.cl')).toBeTruthy();
+    expect(screen.queryByRole('heading', { name: 'Usuarios' })).toBeNull();
     console.log('[LOG][PanelUsuarios] OK: usuarios listados');
+  });
+
+  it('busca usuarios y filtra por rol', async () => {
+    simularApi();
+    renderizar();
+    await screen.findByText('Ash Ketchum');
+
+    fireEvent.change(screen.getByRole('searchbox', { name: 'Buscar usuarios' }), {
+      target: { value: 'brock@pokestore.cl' },
+    });
+    expect(screen.getByText('Brock')).toBeTruthy();
+    expect(screen.queryByText('Ash Ketchum')).toBeNull();
+
+    fireEvent.change(screen.getByRole('searchbox', { name: 'Buscar usuarios' }), {
+      target: { value: '' },
+    });
+    fireEvent.change(screen.getByRole('combobox', { name: 'Filtrar usuarios por rol' }), {
+      target: { value: 'vendedor' },
+    });
+    expect(screen.getByText('Brock')).toBeTruthy();
+    expect(screen.queryByText('Ash Ketchum')).toBeNull();
   });
 
   it('muestra un error si falla la carga de usuarios', async () => {
@@ -105,13 +132,16 @@ describe('Panel de usuarios (admin)', () => {
     fireEvent.click(screen.getByRole('button', { name: 'Editar Ash Ketchum' }));
 
     expect(await screen.findByRole('dialog')).toBeTruthy();
+    expect(screen.getByLabelText('Rol').querySelector('option[value="vendedor"]')).toBeTruthy();
     fireEvent.change(screen.getByLabelText('Nombre'), { target: { value: 'Ash Nuevo' } });
+    fireEvent.change(screen.getByLabelText('Rol'), { target: { value: 'vendedor' } });
     fireEvent.click(screen.getByRole('button', { name: 'Guardar' }));
 
     await esperar(() => llamadasCon(fetchSpy, ['PUT', 'PATCH']).length === 1, 'no se envió la edición');
     const [url, opciones] = llamadasCon(fetchSpy, ['PUT', 'PATCH'])[0];
     expect(url).toContain('/1');
     expect(JSON.parse(opciones.body).nombre).toBe('Ash Nuevo');
+    expect(JSON.parse(opciones.body).rol).toBe('vendedor');
     await esperar(() => screen.queryByRole('dialog') === null, 'la ventana sigue abierta');
     console.log('[LOG][PanelUsuarios] OK: edición enviada y ventana cerrada');
   });

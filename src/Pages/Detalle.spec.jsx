@@ -1,15 +1,18 @@
 import { render, screen, fireEvent } from '@testing-library/react';
 import { MemoryRouter, Route, Routes } from 'react-router-dom';
+import { AuthProvider } from '../context/AuthContext';
 import { ProductosProvider } from '../context/ProductosContext';
 import Detalle from './Detalle';
 
 describe('Detalle Component', () => {
   beforeEach(() => {
     localStorage.removeItem('poke_carrito');
+    localStorage.removeItem('poke_sesion');
   });
 
   afterEach(() => {
     localStorage.removeItem('poke_carrito');
+    localStorage.removeItem('poke_sesion');
   });
 
   it('muestra la información del producto según la URL y permite agregar al carrito', () => {
@@ -17,7 +20,7 @@ describe('Detalle Component', () => {
     render(
       <MemoryRouter initialEntries={['/producto/1']}>
         <Routes>
-          <Route path="/producto/:id" element={<ProductosProvider><Detalle /></ProductosProvider>} />
+          <Route path="/producto/:id" element={<AuthProvider><ProductosProvider><Detalle /></ProductosProvider></AuthProvider>} />
         </Routes>
       </MemoryRouter>
     );
@@ -56,7 +59,7 @@ describe('Detalle Component', () => {
     render(
       <MemoryRouter initialEntries={['/producto/1']}>
         <Routes>
-          <Route path="/producto/:id" element={<ProductosProvider><Detalle /></ProductosProvider>} />
+          <Route path="/producto/:id" element={<AuthProvider><ProductosProvider><Detalle /></ProductosProvider></AuthProvider>} />
         </Routes>
       </MemoryRouter>
     );
@@ -77,13 +80,37 @@ describe('Detalle Component', () => {
     render(
       <MemoryRouter initialEntries={['/producto/1']}>
         <Routes>
-          <Route path="/producto/:id" element={<ProductosProvider><Detalle /></ProductosProvider>} />
+          <Route path="/producto/:id" element={<AuthProvider><ProductosProvider><Detalle /></ProductosProvider></AuthProvider>} />
         </Routes>
       </MemoryRouter>
     );
 
     expect((await screen.findByRole('button', { name: 'Agotado' })).disabled).toBe(true);
     expect(screen.getAllByText('Agotado').length).toBe(2);
+  });
+
+  it('permite a vendedor ver el producto sin controles de compra', async () => {
+    localStorage.setItem('poke_sesion', JSON.stringify({ id: 9, rol: 'vendedor' }));
+    spyOn(window, 'fetch').and.returnValue(
+      Promise.resolve({
+        ok: true,
+        json: () => Promise.resolve([
+          { id: 1, nombre: 'Peluche Pikachu 30cm', precio: 15990, stock: 5 },
+        ]),
+      })
+    );
+
+    render(
+      <MemoryRouter initialEntries={['/producto/1']}>
+        <Routes>
+          <Route path="/producto/:id" element={<AuthProvider><ProductosProvider><Detalle /></ProductosProvider></AuthProvider>} />
+        </Routes>
+      </MemoryRouter>
+    );
+
+    expect(await screen.findByRole('heading', { name: 'Peluche Pikachu 30cm' })).toBeTruthy();
+    expect(screen.queryByRole('button', { name: /Añadir al carrito/i })).toBeNull();
+    expect(screen.queryByLabelText('Cantidad:')).toBeNull();
   });
 });
 

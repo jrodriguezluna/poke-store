@@ -41,7 +41,28 @@ describe('Panel de productos (admin)', () => {
     expect(await screen.findByText('Pikachu Peluche')).toBeTruthy();
     expect(screen.getByText('Charmander Figura')).toBeTruthy();
     expect(screen.getAllByText('Stock bajo').length).toBeGreaterThan(0);
+    expect(screen.queryByRole('heading', { name: 'Productos' })).toBeNull();
     console.log('[LOG][PanelProductos] OK: productos en lista');
+  });
+
+  it('busca productos y filtra por categoría', async () => {
+    renderPanel();
+    await screen.findByText('Pikachu Peluche');
+
+    fireEvent.change(screen.getByRole('searchbox', { name: 'Buscar productos' }), {
+      target: { value: 'Charmander' },
+    });
+    expect(screen.getByText('Charmander Figura')).toBeTruthy();
+    expect(screen.queryByText('Pikachu Peluche')).toBeNull();
+
+    fireEvent.change(screen.getByRole('searchbox', { name: 'Buscar productos' }), {
+      target: { value: '' },
+    });
+    fireEvent.change(screen.getByRole('combobox', { name: 'Filtrar productos por categoría' }), {
+      target: { value: 'Peluches' },
+    });
+    expect(screen.getByText('Pikachu Peluche')).toBeTruthy();
+    expect(screen.queryByText('Charmander Figura')).toBeNull();
   });
 
   it('abre la ventana flotante para agregar un producto', async () => {
@@ -52,6 +73,7 @@ describe('Panel de productos (admin)', () => {
     fireEvent.click(screen.getByRole('button', { name: /agregar producto/i }));
 
     expect(await screen.findByRole('dialog')).toBeTruthy();
+    expect(screen.getByRole('button', { name: /agregar producto/i }).classList.contains('btn-success')).toBeTrue();
     expect(screen.getByLabelText('Nombre')).toBeTruthy();
     expect(screen.getByRole('button', { name: 'Crear' })).toBeTruthy();
     console.log('[LOG][PanelProductos] OK: ventana abierta');

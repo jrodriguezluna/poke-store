@@ -1,6 +1,9 @@
 import { Link } from 'react-router-dom';
+import { useAuth } from '../context/AuthContext';
 
 function Footer() {
+  const { esVendedor } = useAuth();
+
   return (
     <footer className="bg-dark text-light mt-auto py-4">
       <div className="container">
@@ -14,21 +17,33 @@ function Footer() {
             </p>
           </div>
 
-          <nav className="col-6 col-md-4" aria-label="Tienda">
-            <h2 className="h6">Tienda</h2>
-            <ul className="list-unstyled small mb-0 d-flex flex-column gap-2">
-              <li><Link className="link-light" to="/catalogo">Catálogo</Link></li>
-              <li><Link className="link-light" to="/carrito">Carrito</Link></li>
-              <li><Link className="link-light" to="/nosotros">Nosotros</Link></li>
-            </ul>
-          </nav>
+          {esVendedor ? (
+            <nav className="col-6 col-md-4" aria-label="Accesos del vendedor">
+              <h2 className="h6">Gestión</h2>
+              <ul className="list-unstyled small mb-0 d-flex flex-column gap-2">
+                <li><Link className="link-light" to="/catalogo">Catálogo</Link></li>
+                <li><Link className="link-light" to="/ordenes">Órdenes</Link></li>
+              </ul>
+            </nav>
+          ) : (
+            <>
+              <nav className="col-6 col-md-4" aria-label="Tienda">
+                <h2 className="h6">Tienda</h2>
+                <ul className="list-unstyled small mb-0 d-flex flex-column gap-2">
+                  <li><Link className="link-light" to="/catalogo">Catálogo</Link></li>
+                  <li><Link className="link-light" to="/carrito">Carrito</Link></li>
+                  <li><Link className="link-light" to="/nosotros">Nosotros</Link></li>
+                </ul>
+              </nav>
 
-          <nav className="col-6 col-md-4" aria-label="Ayuda">
-            <h2 className="h6">Ayuda</h2>
-            <ul className="list-unstyled small mb-0">
-              <li><Link className="link-light" to="/contacto">Contacto</Link></li>
-            </ul>
-          </nav>
+              <nav className="col-6 col-md-4" aria-label="Ayuda">
+                <h2 className="h6">Ayuda</h2>
+                <ul className="list-unstyled small mb-0">
+                  <li><Link className="link-light" to="/contacto">Contacto</Link></li>
+                </ul>
+              </nav>
+            </>
+          )}
         </div>
 
         <hr className="border-secondary my-3" />

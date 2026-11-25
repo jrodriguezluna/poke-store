@@ -1,11 +1,34 @@
+import { useState } from 'react';
 import { render, screen, fireEvent } from '@testing-library/react';
 import { MemoryRouter } from 'react-router-dom';
 import { AuthProvider } from '../context/AuthContext';
 import { ProductosProvider } from '../context/ProductosContext';
-import AdminPanel from './AdminPanel';
+import AdminPanel, { AdminPanelToggle } from './AdminPanel';
 
 const respuesta = (data) =>
   Promise.resolve({ ok: true, status: 200, json: () => Promise.resolve(data) });
+
+function AdminPanelDemo() {
+  const [abierto, setAbierto] = useState(false);
+  const [ancho, setAncho] = useState(480);
+
+  return (
+    <>
+      <AdminPanelToggle onClick={() => setAbierto((actual) => !actual)} />
+      <div className="app-content">
+        <AdminPanel
+          abierto={abierto}
+          onCerrar={() => setAbierto(false)}
+          ancho={ancho}
+          onCambiarAncho={setAncho}
+        />
+        <div className="app-page">
+          <main>Contenido de la página</main>
+        </div>
+      </div>
+    </>
+  );
+}
 
 const renderConRol = (rol) => {
   if (rol) localStorage.setItem('poke_sesion', JSON.stringify({ id: 1, nombre: 'Test', rol }));
@@ -13,7 +36,7 @@ const renderConRol = (rol) => {
     <MemoryRouter>
       <AuthProvider>
         <ProductosProvider>
-          <AdminPanel />
+          <AdminPanelDemo />
         </ProductosProvider>
       </AuthProvider>
     </MemoryRouter>
@@ -70,6 +93,11 @@ describe('Panel lateral de administración', () => {
     fireEvent.click(screen.getByRole('button', { name: /panel de administración/i }));
 
     expect(await screen.findByText('Administración')).toBeTruthy();
+    expect(screen.getByRole('main').parentElement.previousElementSibling.querySelector('.admin-panel'))
+      .toBeTruthy();
+    const tabProductos = screen.getByRole('tab', { name: 'Productos' });
+    expect(screen.getByRole('button', { name: /agregar producto/i }).parentElement)
+      .toBe(tabProductos.closest('.admin-panel-tabs'));
     expect(await screen.findByText('Pikachu Peluche')).toBeTruthy();
 
     fireEvent.click(screen.getByRole('tab', { name: 'Usuarios' }));
@@ -77,6 +105,19 @@ describe('Panel lateral de administración', () => {
 
     fireEvent.click(screen.getByRole('tab', { name: 'Blogs' }));
     expect(await screen.findByText('Cuidar una colección')).toBeTruthy();
+
+    fireEvent.click(screen.getByRole('button', { name: 'Cerrar panel de administración' }));
+    expect(screen.queryByText('Administración')).toBeNull();
     console.log('[LOG][AdminPanel] OK: panel con ambas secciones');
+  });
+
+  it('permite cambiar el ancho del panel con el teclado', () => {
+    renderConRol('admin');
+    fireEvent.click(screen.getByRole('button', { name: /panel de administración/i }));
+
+    const control = screen.getByRole('separator', { name: 'Redimensionar panel de administración' });
+    expect(control.getAttribute('aria-valuenow')).toBe('480');
+    fireEvent.keyDown(control, { key: 'ArrowRight' });
+    expect(control.getAttribute('aria-valuenow')).toBe('496');
   });
 });

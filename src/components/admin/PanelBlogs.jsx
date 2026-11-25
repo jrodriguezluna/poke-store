@@ -6,6 +6,8 @@ import Form from 'react-bootstrap/Form';
 import ListGroup from 'react-bootstrap/ListGroup';
 import Modal from 'react-bootstrap/Modal';
 import Row from 'react-bootstrap/Row';
+import AdminListFilters from './AdminListFilters';
+import AdminPanelTabs from './AdminPanelTabs';
 import {
   actualizarBlog,
   crearBlog,
@@ -25,7 +27,10 @@ const nuevoBlog = () => ({
   consejo: '',
 });
 
-export default function PanelBlogs() {
+export default function PanelBlogs({
+  seccionActiva = 'blogs',
+  onCambiarSeccion = () => {},
+}) {
   const [blogs, setBlogs] = useState([]);
   const [cargando, setCargando] = useState(true);
   const [errorCarga, setErrorCarga] = useState('');
@@ -35,6 +40,13 @@ export default function PanelBlogs() {
   const [errorModal, setErrorModal] = useState('');
   const [errorLista, setErrorLista] = useState('');
   const [aviso, setAviso] = useState('');
+  const [busqueda, setBusqueda] = useState('');
+
+  const consulta = busqueda.trim().toLocaleLowerCase();
+  const blogsFiltrados = blogs.filter((blog) =>
+    (!consulta
+      || `${blog.titulo ?? ''} ${blog.etiqueta ?? ''} ${blog.autor ?? ''}`.toLocaleLowerCase().includes(consulta))
+  );
 
   const recargar = async () => {
     setCargando(true);
@@ -127,12 +139,17 @@ export default function PanelBlogs() {
 
   return (
     <>
-      <div className="d-flex justify-content-between align-items-center mb-3">
-        <h2 className="h5 mb-0">Blogs</h2>
-        <Button variant="danger" size="sm" onClick={() => abrir()}>
+      <AdminPanelTabs activa={seccionActiva} onChange={onCambiarSeccion}>
+        <Button variant="success" size="sm" onClick={() => abrir()}>
           Agregar blog
         </Button>
-      </div>
+      </AdminPanelTabs>
+      <AdminListFilters
+        search={busqueda}
+        onSearchChange={setBusqueda}
+        searchLabel="Buscar blogs"
+        searchPlaceholder="Buscar blogs"
+      />
 
       {errorCarga && <Alert variant="danger">{errorCarga}</Alert>}
       {errorLista && <Alert variant="danger">{errorLista}</Alert>}
@@ -142,13 +159,15 @@ export default function PanelBlogs() {
         </Alert>
       )}
       {cargando && <div role="status">Cargando blogs...</div>}
-      {!cargando && !errorCarga && blogs.length === 0 && (
-        <Alert variant="info">Todavía no hay artículos.</Alert>
+      {!cargando && !errorCarga && blogsFiltrados.length === 0 && (
+        <Alert variant="info">
+          {blogs.length === 0 ? 'Todavía no hay artículos.' : 'No se encontraron artículos.'}
+        </Alert>
       )}
 
-      {!cargando && !errorCarga && blogs.length > 0 && (
+      {!cargando && !errorCarga && blogsFiltrados.length > 0 && (
         <ListGroup variant="flush">
-          {blogs.map((blog) => (
+          {blogsFiltrados.map((blog) => (
             <ListGroup.Item key={blog.id} className="d-flex gap-3 px-0">
               {blog.imagen ? (
                 <img

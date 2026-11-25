@@ -3,7 +3,7 @@ import Container from 'react-bootstrap/Container';
 import Nav from 'react-bootstrap/Nav';
 import Navbar from 'react-bootstrap/Navbar';
 import { useAuth } from '../context/AuthContext';
-import AdminPanel from './AdminPanel';
+import { AdminPanelToggle } from './AdminPanel';
 import './Navbar.css';
 
 const enlacesIzquierda = [
@@ -29,23 +29,29 @@ function renderEnlaces(enlaces) {
   ));
 }
 
-function AppNavbar() {
-  const { user, logout } = useAuth();
+function AppNavbar({ onAdminToggle }) {
+  const { user, esAdmin, esVendedor, logout } = useAuth();
+  const enlaces = esVendedor
+    ? [
+        { to: '/catalogo', label: 'Catálogo' },
+        { to: '/ordenes', label: 'Órdenes' },
+      ]
+    : enlacesIzquierda;
 
   return (
     <Navbar expand="lg" bg="dark" data-bs-theme="dark" sticky="top">
       <Container>
-        <AdminPanel />
-        <Navbar.Brand as={NavLink} to="/" className="fw-bold">
+        {esAdmin && <AdminPanelToggle onClick={onAdminToggle} />}
+        <Navbar.Brand as={NavLink} to={esVendedor ? '/catalogo' : '/'} className="fw-bold">
           <span className="text-danger">Poke</span>Store
         </Navbar.Brand>
 
         <Navbar.Toggle aria-controls="menuPrincipal" />
 
         <Navbar.Collapse id="menuPrincipal">
-          <Nav className="me-auto">{renderEnlaces(enlacesIzquierda)}</Nav>
+          <Nav className="me-auto">{renderEnlaces(enlaces)}</Nav>
           <Nav className="ms-lg-auto">
-            {renderEnlaces([{ to: '/carrito', label: 'Carrito' }])}
+            {!esVendedor && renderEnlaces([{ to: '/carrito', label: 'Carrito' }])}
             {user ? (
               <Nav.Link as="button" type="button" onClick={logout}>
                 Salir

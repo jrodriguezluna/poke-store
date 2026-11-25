@@ -23,7 +23,12 @@ export function AuthProvider({ children }) {
     const usuario = data.usuario ?? data.user ?? data;
     const token = data.token ?? data.access_token;
 
-    const { password: _omitida, ...sesion } = usuario;
+    const {
+      password: _omitida,
+      token: _token,
+      access_token: _accessToken,
+      ...sesion
+    } = usuario;
 
     localStorage.setItem(SESION_KEY, JSON.stringify(sesion));
     if (token) localStorage.setItem(TOKEN_KEY, token);
@@ -37,9 +42,10 @@ export function AuthProvider({ children }) {
   };
 
   const esAdmin = user?.rol === 'admin';
+  const esVendedor = user?.rol === 'vendedor';
 
   return (
-    <AuthContext.Provider value={{ user, esAdmin, guardarSesion, logout }}>
+    <AuthContext.Provider value={{ user, esAdmin, esVendedor, guardarSesion, logout }}>
       {children}
     </AuthContext.Provider>
   );
